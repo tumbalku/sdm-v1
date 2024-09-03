@@ -1,0 +1,246 @@
+package com.sdm.app.service.impl;
+
+import ch.qos.logback.core.util.StringUtil;
+import com.sdm.app.entity.Address;
+import com.sdm.app.entity.Role;
+import com.sdm.app.entity.User;
+import com.sdm.app.enumrated.Gender;
+import com.sdm.app.enumrated.UserStatus;
+import com.sdm.app.model.req.create.CreateUserRequest;
+import com.sdm.app.model.req.search.UserSearchRequest;
+import com.sdm.app.model.req.update.UpdateUserRequest;
+import com.sdm.app.model.res.SimpleUserResponse;
+import com.sdm.app.model.res.UserResponse;
+import com.sdm.app.repository.FileRepository;
+import com.sdm.app.repository.RoleRepository;
+import com.sdm.app.repository.UserRepository;
+import com.sdm.app.security.BCrypt;
+import com.sdm.app.service.UserService;
+import com.sdm.app.utils.GeneralHelper;
+import com.sdm.app.utils.ResponseConverter;
+import jakarta.persistence.criteria.Predicate;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@AllArgsConstructor
+public class UserServiceImpl implements UserService {
+
+  private final UserRepository userRepository;
+  private final RoleRepository roleRepository;
+  private final FileServiceImpl fileService;
+  private final AddressServiceImpl addressService;
+
+
+  @Transactional(readOnly = true)
+  public Page<SimpleUserResponse> searchUsers(User user, UserSearchRequest request){
+
+    GeneralHelper.isAdmin(user);
+
+    int page = request.getPage() - 1;
+
+    Specification<User> specification = (root, query, builder) -> {
+      List<Predicate> predicates = new ArrayList<>();
+
+      if(Objects.nonNull(request.getIdentity())){
+        predicates.add(builder.or(
+                builder.equal(root.get("nip"), request.getIdentity()),
+                builder.like(root.get("name"), "%" + request.getIdentity() + "%")));
+      }
+
+      if(Objects.nonNull(request.getStatus())) {
+        predicates.add(builder.equal(root.get("status"), UserStatus.valueOf(request.getStatus())));
+      }
+
+      return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
+    };
+
+    Pageable pageable = PageRequest.of(page, request.getSize());
+    Page<User> users = userRepository.findAll(specification, pageable);
+    List<SimpleUserResponse> userResponse = users.getContent().stream()
+            .map(ResponseConverter::userToSimpleResponse)
+            .collect(Collectors.toList());
+
+    return new PageImpl<>(userResponse, pageable, users.getTotalElements());
+  }
+
+  @Override
+  @Transactional
+  public SimpleUserResponse create(User admin, CreateUserRequest request) {
+
+    GeneralHelper.isAdmin(admin);
+
+    User user = new User();
+    user.setId(UUID.randomUUID().toString());
+    if (!StringUtils.hasText(request.getUsername()) || !Objects.nonNull(request.getUsername())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username tidak boleh kosong!");
+    }
+
+    user.setUsername(request.getUsername());
+    user.setPassword(BCrypt.hashpw(request.getUsername(), BCrypt.gensalt()));
+    user.setGender(Gender.valueOf(request.getGender()));
+    Optional.ofNullable(request.getName()).filter(StringUtils::hasText).ifPresent(user::setName);
+    Optional.ofNullable(request.getEmail()).filter(StringUtils::hasText).ifPresent(user::setEmail);
+    Optional.ofNullable(request.getNip()).filter(StringUtils::hasText).ifPresent(user::setNip);
+    Optional.ofNullable(request.getPhone()).filter(StringUtils::hasText).ifPresent(user::setPhone);
+
+    Address address = addressService.makeAddress(request.getAddress());
+    user.setAddress(address);
+
+    // status in corporation
+    user.setPangkat(request.getPangkat());
+    user.setGolongan(request.getGolongan());
+    user.setPosition(request.getPosition());
+    user.setWorkUnit(request.getWorkUnit());
+    user.setStatus(UserStatus.ACTIVE);
+
+    // by default user must be an employee
+    Role role = roleRepository.findByName("EMPLOYEE")
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Please create the ROLE!"));
+
+    user.setRoles(Collections.singleton(role));
+
+    user.setCreatedAt(LocalDateTime.now());
+    user.setUpdatedAt(LocalDateTime.now());
+    userRepository.save(user);
+
+    return ResponseConverter.userToSimpleResponse(user);
+  }
+
+  @Transactional
+  public void updateAvatar(User current, MultipartFile file) {
+
+    // supaya tidak buang buang memory
+    Optional.ofNullable(current.getAvatar()).filter(StringUtils::hasText)
+            .ifPresent(image -> fileService.removePrevFile(current.getAvatar()));
+
+    current.setAvatar(fileService.saveImage(file));
+
+    userRepository.save(current);
+  }
+
+  @Transactional
+  public SimpleUserResponse update(User admin, CreateUserRequest request) {
+
+    GeneralHelper.isAdmin(admin);
+
+    User user = getUser(request.getId());
+
+    if (!StringUtils.hasText(request.getUsername()) || !Objects.nonNull(request.getUsername())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username tidak boleh kosong!");
+    }
+    if (!StringUtils.hasText(request.getPhone()) || !Objects.nonNull(request.getPhone())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Phone tidak boleh kosong!");
+    }
+
+    user.setUsername(request.getUsername());
+    Optional.ofNullable(request.getNip()).filter(StringUtils::hasText).ifPresent(user::setNip);
+    Optional.ofNullable(request.getEmail()).filter(StringUtils::hasText).ifPresent(user::setEmail);
+    Optional.ofNullable(request.getPhone()).filter(StringUtils::hasText).ifPresent(user::setPhone);
+    Optional.ofNullable(request.getPangkat()).filter(StringUtils::hasText).ifPresent(user::setPangkat);
+    Optional.ofNullable(request.getGolongan()).filter(StringUtils::hasText).ifPresent(user::setGolongan);
+    Optional.ofNullable(request.getPosition()).filter(StringUtils::hasText).ifPresent(user::setPosition);
+    Optional.ofNullable(request.getWorkUnit()).filter(StringUtils::hasText).ifPresent(user::setWorkUnit);
+    Optional.ofNullable(request.getGender()).filter(StringUtils::hasText)
+            .ifPresent(gender -> user.setGender(Gender.valueOf(request.getGender())));
+
+    if(Objects.nonNull(request.getRoles()) && request.getRoles().size() != 0) {
+      user.getRoles().clear();
+      for (String role : request.getRoles()) {
+        Role exsistingRole = roleRepository.findByName(role)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong Role input"));
+        user.getRoles().add(exsistingRole);
+      }
+    }
+
+    Address address = addressService.makeAddress(request.getAddress());
+    user.setAddress(address);
+
+    user.setUpdatedAt(LocalDateTime.now());
+
+    return ResponseConverter.userToSimpleResponse(user);
+  }
+
+  @Transactional
+  public SimpleUserResponse updatePassword(User current, UpdateUserRequest request){
+
+    if(!request.getNewPassword().equals(request.getConfirmPassword())){
+      throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Double check the new password and the confirm password!");
+    }
+    current.setUpdatedAt(LocalDateTime.now());
+    current.setPassword(BCrypt.hashpw(request.getConfirmPassword(), BCrypt.gensalt()));
+    userRepository.save(current);
+    return ResponseConverter.userToSimpleResponse(current);
+  }
+
+  @Transactional
+  public SimpleUserResponse resetPassword(User admin, String id){
+    GeneralHelper.isAdmin(admin);
+
+    User user = getUser(id);
+    user.setUpdatedAt(LocalDateTime.now());
+    user.setPassword(BCrypt.hashpw(user.getUsername(), BCrypt.gensalt()));
+    userRepository.save(user);
+
+    return ResponseConverter.userToSimpleResponse(user);
+  }
+
+  @Transactional
+  public SimpleUserResponse updateUserInfo(User current, UpdateUserRequest request){
+
+    if (!StringUtils.hasText(request.getUsername()) || !Objects.nonNull(request.getUsername())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username tidak boleh kosong!");
+    }
+    if (!StringUtils.hasText(request.getPhone()) || !Objects.nonNull(request.getPhone())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Phone tidak boleh kosong!");
+    }
+
+    current.setUsername(request.getUsername());
+    Optional.ofNullable(request.getPhone()).filter(StringUtils::hasText).ifPresent(current::setPhone);
+    Optional.ofNullable(request.getEmail()).filter(StringUtils::hasText).ifPresent(current::setEmail);
+    Optional.ofNullable(request.getInstagram()).filter(StringUtils::hasText).ifPresent(current::setInstagram);
+    Optional.ofNullable(request.getLinkedin()).filter(StringUtils::hasText).ifPresent(current::setLinkedin);
+    Optional.ofNullable(request.getTwitter()).filter(StringUtils::hasText).ifPresent(current::setTwitter);
+    Optional.ofNullable(request.getFacebook()).filter(StringUtils::hasText).ifPresent(current::setFacebook);
+    current.setUpdatedAt(LocalDateTime.now());
+
+    userRepository.save(current);
+    return ResponseConverter.userToSimpleResponse(current);
+  }
+
+  @Transactional
+  public SimpleUserResponse delete(User admin, String id){
+    GeneralHelper.isAdmin(admin);
+    User user = getUser(id);
+    if(Objects.nonNull(user.getAvatar())){
+      fileService.removePrevFile(user.getAvatar());
+    }
+    userRepository.delete(user);
+    return ResponseConverter.userToSimpleResponse(user);
+  }
+
+  @Transactional(readOnly = true)
+  public UserResponse getById(String id){
+    User user = getUser(id);
+    return ResponseConverter.userToResponse(user);
+  }
+
+  public User getUser(String id){
+    return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+  }
+
+}
