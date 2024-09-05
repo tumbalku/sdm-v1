@@ -145,4 +145,16 @@ public class ResponseConverter {
             .size(page.getSize())
             .build();
   }
+
+  public static PostResponse postToResponse(Post post){
+    return PostResponse.builder()
+            .id(post.getId())
+            .title(post.getTitle())
+            .author(post.getUser().getName())
+            .imageUrl(post.getImage())
+            .content(post.getContent())
+            .createdAt(post.getCreatedAt())
+            .updatedAt(post.getUpdatedAt())
+            .build();
+  }
 }

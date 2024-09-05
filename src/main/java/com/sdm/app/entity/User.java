@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -82,5 +83,8 @@ public class User {
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "address", referencedColumnName = "id")
   private Address address;
+
+  @OneToMany(mappedBy = "user")
+  private List<Post> posts;
 
 }
