@@ -83,7 +83,7 @@ public class LetterController {
 
   @PostMapping("/upload")
   public WebResponse<LetterResponse> save(User user,
-                                          @RequestParam(name = "file") MultipartFile file,
+                                          @RequestParam(name = "file", required = false) MultipartFile file,
                                           @RequestParam(name = "nip", required = false) String nip,
                                           @RequestParam(name = "name", required = false) String name,
                                           @RequestParam(name = "num", required = false) String num,

@@ -29,7 +29,7 @@ public class AuthServiceImpl{
     helper.validate(request);
 
     User user = userRepository.findByUsername(request.getUsername())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "This username maybe not exist"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "This username maybe not exist"));
     if(BCrypt.checkpw(request.getPassword(), user.getPassword())){
 
       // success login
@@ -43,7 +43,7 @@ public class AuthServiceImpl{
               .user(ResponseConverter.userToResponse(user))
               .build();
     }else{
-      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You send wrong password!");
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You send wrong password!");
     }
   }
 

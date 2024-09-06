@@ -120,7 +120,9 @@ public class LetterServiceImpl {
   public LetterResponse delete(User admin, Long id){
     GeneralHelper.isAdmin(admin);
     Letter letter = getLetter(id);
-    fileService.removePrevFile(letter.getPath());
+    if(Objects.nonNull(letter.getPath())){
+      fileService.removePrevFile(letter.getPath());
+    }
     letterRepository.delete(letter);
     return ResponseConverter.letterToResponse(letter);
   }
