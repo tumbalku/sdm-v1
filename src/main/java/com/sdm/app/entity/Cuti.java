@@ -30,6 +30,7 @@ public class Cuti {
   private String romawi;
 
   private String address;
+  private String reason;
   private Year year;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
