@@ -96,7 +96,6 @@ public class LetterServiceImpl {
     Letter letter = new Letter();
     letter.setName(request.getName());
     letter.setType(LetterType.valueOf(request.getType()));
-    letter.setNum(request.getNum());
     letter.setUploadedAt(LocalDateTime.now());
     letter.setUpdatedAt(LocalDateTime.now());
     letter.setExpiredAt(request.getExpiredAt());

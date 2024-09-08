@@ -278,17 +278,6 @@ public class CutiPdfService {
             .setBorder(Border.NO_BORDER));
     return core;
   }
-
-  private DateTimeFormatter dateDayFormatter(){
-    Locale local = new Locale("id", "ID");
-    String pattern = "dd";
-    return DateTimeFormatter.ofPattern(pattern, local);
-  }
-  private DateTimeFormatter dateFormatter(){
-    Locale local = new Locale("id", "ID");
-    String pattern = "dd MMMM yyyy";
-    return DateTimeFormatter.ofPattern(pattern, local);
-  }
   private Table signed(Cuti cuti){
 
     float [] ttdSize = {330f, 265};
@@ -533,5 +522,16 @@ public class CutiPdfService {
     document.close();
 
     System.out.println("Completed");
+  }
+
+  private DateTimeFormatter dateDayFormatter(){
+    Locale local = new Locale("id", "ID");
+    String pattern = "dd";
+    return DateTimeFormatter.ofPattern(pattern, local);
+  }
+  private DateTimeFormatter dateFormatter(){
+    Locale local = new Locale("id", "ID");
+    String pattern = "dd MMMM yyyy";
+    return DateTimeFormatter.ofPattern(pattern, local);
   }
 }

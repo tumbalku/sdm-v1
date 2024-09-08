@@ -68,6 +68,9 @@ public class User {
   private Set<Letter> letters;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private Set<Sip> sip;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private Set<Cuti> cutiSet;
   // ========== ONE TO MANY RELATION ========== \\
 

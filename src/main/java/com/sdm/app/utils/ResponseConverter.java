@@ -88,6 +88,32 @@ public class ResponseConverter {
             .build();
   }
 
+  public static SipReportResponse sipReportToResponse(SipReport report){
+    return SipReportResponse.builder()
+            .sentDate(report.getSentDate())
+            .status(report.getStatus())
+            .id(report.getId())
+            .build();
+  }
+  public static SipResponse sipToResponse(Sip sip){
+    SipResponse response = SipResponse.builder()
+            .id(sip.getId())
+            .size(sip.getSize())
+            .name(sip.getName())
+            .num(sip.getNum())
+            .path(sip.getPath())
+            .uploadedAt(sip.getUploadedAt())
+            .expiredAt(sip.getExpiredAt())
+            .updatedAt(sip.getUpdatedAt())
+            .fileType(sip.getFileType())
+            .user(userToSimpleResponse(sip.getUser()))
+            .build();
+
+    response.setReports(sip.getReports().stream().map(ResponseConverter::sipReportToResponse).collect(Collectors.toList()));
+
+    return response;
+  }
+
   public static AddressResponse addressToResponse(Address address){
     return AddressResponse.builder()
             .id(address.getId())
