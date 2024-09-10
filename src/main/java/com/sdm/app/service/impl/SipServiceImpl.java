@@ -26,10 +26,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,6 +83,7 @@ public class SipServiceImpl {
   public SipResponse create(User admin, CreateSipRequest request){
     GeneralHelper.isAdmin(admin);
     Sip sip = new Sip();
+    sip.setId(UUID.randomUUID().toString());
     sip.setName(request.getName());
     sip.setUploadedAt(LocalDateTime.now());
     sip.setUpdatedAt(LocalDateTime.now());

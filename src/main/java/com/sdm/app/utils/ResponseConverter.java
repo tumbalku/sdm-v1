@@ -109,7 +109,9 @@ public class ResponseConverter {
             .user(userToSimpleResponse(sip.getUser()))
             .build();
 
-    response.setReports(sip.getReports().stream().map(ResponseConverter::sipReportToResponse).collect(Collectors.toList()));
+    if(Objects.nonNull(sip.getReports()) && sip.getReports().size() != 0){
+      response.setReports(sip.getReports().stream().map(ResponseConverter::sipReportToResponse).collect(Collectors.toList()));
+    }
 
     return response;
   }

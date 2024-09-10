@@ -2,7 +2,7 @@ package com.sdm.app.enumrated;
 
 public enum SipReportStatus {
   TERKIRIM("Terkirim"),
-  TIDAK_TERKIRI("Tidak terkirim");
+  TIDAK_TERKIRIM("Tidak terkirim");
 
   private final String description;
 

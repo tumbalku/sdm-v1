@@ -21,7 +21,7 @@ public class Sip {
   @Id
   private String id;
 
-  @Column(nullable = false, unique = true)
+  @Column(unique = true)
   private String num;
   private String name;
   private String path;
