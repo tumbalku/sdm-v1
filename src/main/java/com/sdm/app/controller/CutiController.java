@@ -43,7 +43,7 @@ public class CutiController {
     request.setPage(page);
     request.setSize(size);
 
-    DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> response = cutiService.search(request);
+    DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> response = cutiService.search(user, request);
     return WebResponseWithPagingReport.<List<CutiResponse>, Map<KopType, Long>>builder()
             .data(response.getData().getContent())
             .report(response.getReport())

@@ -78,9 +78,8 @@ public class CutiServiceImpl {
             ));
   }
   @Transactional(readOnly = true)
-//  public Page<CutiResponse> search(SearchCutiRequest request){
-  public DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> search(SearchCutiRequest request){
-
+  public DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> search(User admin, SearchCutiRequest request){
+    GeneralHelper.isAdmin(admin);
     int page = request.getPage() - 1;
 
     Specification<Cuti> specification = (root, query, builder) -> {
@@ -109,7 +108,6 @@ public class CutiServiceImpl {
     DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> data = new DataReportResponse<>();
     data.setData(new PageImpl<>(userResponse, pageable, users.getTotalElements()));
     data.setReport(counts);
-//    return new PageImpl<>(userResponse, pageable, users.getTotalElements());
     return data;
   }
 

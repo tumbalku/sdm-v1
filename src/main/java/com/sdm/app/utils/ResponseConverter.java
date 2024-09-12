@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -175,10 +176,13 @@ public class ResponseConverter {
   }
 
   public static PostResponse postToResponse(Post post){
+    User user =  post.getUser();
     return PostResponse.builder()
             .id(post.getId())
             .title(post.getTitle())
-            .author(post.getUser().getName())
+            .author(user.getName())
+            .avatar(user.getAvatar())
+            .priority(post.getPriority())
             .imageUrl(post.getImage())
             .content(post.getContent())
             .createdAt(post.getCreatedAt())

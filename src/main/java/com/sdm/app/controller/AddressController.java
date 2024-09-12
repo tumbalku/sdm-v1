@@ -46,8 +46,8 @@ public class AddressController {
   }
 
   @GetMapping
-  public WebResponse<List<AddressResponse>> findAll() {
-    List<AddressResponse> response = addressService.findAll();
+  public WebResponse<List<AddressResponse>> findAll(User user) {
+    List<AddressResponse> response = addressService.findAll(user);
     return WebResponse.<List<AddressResponse>>builder()
             .data(response)
             .message("Success get addresses")

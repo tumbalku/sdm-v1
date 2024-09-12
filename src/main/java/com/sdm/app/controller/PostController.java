@@ -23,11 +23,15 @@ public class PostController {
 
   @GetMapping
   public WebResponseWithPaging<List<PostResponse>> search(@RequestParam(name = "content", required = false) String content,
+                                                          @RequestParam(name = "priority", required = false) Integer priority,
+                                                          @RequestParam(name = "dateSortBy", required = false, defaultValue = "latest") String dateSortBy,
                                                           @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                                           @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
 
     SearchPostRequest request = SearchPostRequest.builder()
+            .priority(priority)
             .content(content)
+            .dateSortBy(dateSortBy)
             .size(size)
             .page(page)
             .build();

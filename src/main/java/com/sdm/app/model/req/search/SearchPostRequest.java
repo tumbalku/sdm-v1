@@ -12,6 +12,8 @@ import lombok.*;
 public class SearchPostRequest {
 
   private String content;
+  private String dateSortBy;
+  private Integer priority;
 
   @NotNull
   private Integer page;

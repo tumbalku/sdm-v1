@@ -22,6 +22,8 @@ public class Post {
   private String image;
   @Column(name = "content", columnDefinition="LONGTEXT")
   private String content;
+  @Column(nullable = false, columnDefinition = "int default 0")
+  private int priority;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 

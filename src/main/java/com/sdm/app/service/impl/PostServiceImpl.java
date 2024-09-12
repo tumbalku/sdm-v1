@@ -11,10 +11,7 @@ import com.sdm.app.utils.GeneralHelper;
 import com.sdm.app.utils.ResponseConverter;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -61,7 +58,7 @@ public class PostServiceImpl {
     }
     Optional.ofNullable(request.getTitle()).filter(StringUtils::hasText).ifPresent(post::setTitle);
     Optional.ofNullable(request.getContent()).filter(StringUtils::hasText).ifPresent(post::setContent);
-    Optional.ofNullable(request.getImageUrl()).filter(StringUtils::hasText).ifPresent(post::setImage);
+    post.setImage(request.getImageUrl());
     post.setUpdatedAt(LocalDateTime.now());
 
     postRepository.save(post);
@@ -97,10 +94,23 @@ public class PostServiceImpl {
                 builder.like(root.get("title"), "%" + request.getContent() + "%"),
                 builder.like(root.get("content"), "%" + request.getContent() + "%")));
       }
+
+      if (Objects.nonNull(request.getPriority())) {
+        predicates.add(builder.equal(root.get("priority"), request.getPriority()));
+      }
+
       return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
     };
 
-    Pageable pageable = PageRequest.of(page, request.getSize());
+
+    Sort.Direction sortDirection = "latest".equalsIgnoreCase(request.getDateSortBy()) ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+    Sort sort = Sort.by(
+            Sort.Order.desc("priority"),
+            new Sort.Order(sortDirection, "createdAt")
+    );
+
+    Pageable pageable = PageRequest.of(page, request.getSize(), sort);
     Page<Post> posts = postRepository.findAll(specification, pageable);
     List<PostResponse> postResponse = posts.getContent().stream()
             .map(ResponseConverter::postToResponse)

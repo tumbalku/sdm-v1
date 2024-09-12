@@ -87,7 +87,8 @@ public class AddressServiceImpl {
     return ResponseConverter.addressToResponse(address);
   }
 
-  public List<AddressResponse> findAll() {
+  public List<AddressResponse> findAll(User admin) {
+    GeneralHelper.isAdmin(admin);
     return addressRepository.findAll().stream()
             .map(ResponseConverter::addressToResponse).collect(Collectors.toList());
   }
