@@ -17,6 +17,8 @@ import com.sdm.app.security.BCrypt;
 import com.sdm.app.service.UserService;
 import com.sdm.app.utils.GeneralHelper;
 import com.sdm.app.utils.ResponseConverter;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -65,6 +67,12 @@ public class UserServiceImpl implements UserService {
         predicates.add(builder.equal(root.get("status"), UserStatus.valueOf(request.getStatus())));
       }
 
+      // Filter berdasarkan roles
+      if (Objects.nonNull(request.getRoles()) && !request.getRoles().isEmpty()) {
+        Join<User, Role> rolesJoin = root.join("roles", JoinType.INNER); // Melakukan join ke tabel roles
+        predicates.add(rolesJoin.get("name").in(request.getRoles())); // Filter berdasarkan roles
+      }
+
       return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
     };
 
@@ -81,6 +89,7 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public SimpleUserResponse create(User admin, CreateUserRequest request) {
 
+    GeneralHelper.validate(request);
     GeneralHelper.isAdmin(admin);
 
     User user = new User();
@@ -139,6 +148,7 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public SimpleUserResponse update(User admin, CreateUserRequest request) {
 
+    GeneralHelper.validate(request);
     GeneralHelper.isAdmin(admin);
 
     User user = getUser(request.getId());
@@ -181,6 +191,7 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public SimpleUserResponse updatePassword(User current, UpdatePasswordRequest request){
 
+    GeneralHelper.validate(request);
     if(!request.getNewPassword().equals(request.getConfirmPassword())){
       throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Double check the new password and the confirm password!");
     }
@@ -205,6 +216,7 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public SimpleUserResponse updateUserInfo(User current, UpdateUserRequest request){
 
+    GeneralHelper.validate(request);
     if (!StringUtils.hasText(request.getUsername()) || !Objects.nonNull(request.getUsername())) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username tidak boleh kosong!");
     }

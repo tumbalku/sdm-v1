@@ -64,6 +64,7 @@ public class UserController {
   public WebResponseWithPaging<List<SimpleUserResponse>> search (User user,
                                                            @RequestParam(name = "identity", required = false) String identity,
                                                            @RequestParam(name = "status", required = false) String status,
+                                                           @RequestParam(name = "roles", required = false) List<String> roles,
                                                            @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                                            @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
 
@@ -71,6 +72,7 @@ public class UserController {
     request.setIdentity(identity);
     request.setStatus(status);
     request.setPage(page);
+    request.setRoles(roles);
     request.setSize(size);
 
     Page<SimpleUserResponse> responses = userService.searchUsers(user, request);

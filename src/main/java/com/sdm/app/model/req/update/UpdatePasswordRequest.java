@@ -18,6 +18,5 @@ public class UpdatePasswordRequest {
   private String newPassword;
 
   @NotNull
-  @Size(min = 6, message = "minimum {min} character")
   private String confirmPassword;
 }
