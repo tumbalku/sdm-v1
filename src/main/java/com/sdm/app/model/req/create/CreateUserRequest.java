@@ -2,6 +2,7 @@ package com.sdm.app.model.req.create;
 
 import java.util.List;
 
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 
@@ -13,6 +14,8 @@ import lombok.*;
 public class CreateUserRequest {
 
   private String id;
+
+  @Size(min = 6, message = "minimum {min} character")
   private String username;
   private String nip;
   private String name;

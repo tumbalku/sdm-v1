@@ -37,7 +37,7 @@ public class ResponseConverter {
       response.setAddress(user.getAddress().getName());
     }
 
-    if(Objects.nonNull(user.getRoles())){
+    if(Objects.nonNull(user.getRoles()) && user.getRoles().size() != 0){
       response.setRoles(user.getRoles().stream()
               .map(Role::getName)
               .collect(Collectors.toList()));
@@ -145,8 +145,11 @@ public class ResponseConverter {
 
   public static CutiResponse cutiToResponse(Cuti cuti) {
     CutiResponse response = CutiResponse.builder()
+            .status(cuti.getStatus().getDescription())
             .kop(kopToResponse(cuti.getKop()))
             .dateEnd(cuti.getDateEnd())
+            .message(cuti.getMessage())
+            .reason(cuti.getReason())
             .dateStart(cuti.getDateStart())
             .signedBy(cuti.getSignedBy())
             .address(cuti.getAddress())

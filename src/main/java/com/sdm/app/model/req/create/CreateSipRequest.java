@@ -22,9 +22,9 @@ public class CreateSipRequest {
   private String name;
   private String num;
 
-  @NotNull(message = "nip tidak boleh null")
-  @NotBlank(message = "nip tidak boleh kosong")
-  private String nip;
+  @NotNull(message = "userId tidak boleh null")
+  @NotBlank(message = "userId tidak boleh kosong")
+  private String userId;
   private LocalDate expiredAt;
   private MultipartFile file;
 }

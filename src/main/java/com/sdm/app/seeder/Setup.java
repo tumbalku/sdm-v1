@@ -68,8 +68,8 @@ public class Setup implements CommandLineRunner {
       Role EMPLOYEE = new Role();
       EMPLOYEE.setName("EMPLOYEE");
 
-      Role BLUD = new Role();
-      BLUD.setName("BLUD");
+      Role OFFICEHOLDER = new Role();
+      OFFICEHOLDER.setName("OFFICEHOLDER");
 
       Role PPPK = new Role();
       PPPK.setName("PPPK");
@@ -79,9 +79,9 @@ public class Setup implements CommandLineRunner {
 
       Role ADMIN = new Role();
       ADMIN.setName("ADMIN");
-      roleRepository.saveAll(List.of(BLUD, EMPLOYEE, ADMIN, PNS, PPPK));
+      roleRepository.saveAll(List.of(OFFICEHOLDER, EMPLOYEE, ADMIN, PNS, PPPK));
 
-      saveUser("admin", "admin@gmail.com","085336421912", KENDARI, ADMIN, UserStatus.ACTIVE);
+      saveUser("admin", "admin@gmail.com","6285336421912", KENDARI, ADMIN, UserStatus.ACTIVE);
 
     }
 

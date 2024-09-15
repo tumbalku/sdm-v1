@@ -1,5 +1,6 @@
 package com.sdm.app.entity;
 
+import com.sdm.app.enumrated.CutiStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,13 +24,18 @@ public class Cuti {
 
   @Id
   private String id;
-  private Integer number;
+  private String number;
   private LocalDate dateStart;
   private LocalDate dateEnd;
   @Column(nullable = false)
   private String romawi;
-
   private String address;
+
+  @Column(columnDefinition="LONGTEXT")
+  private String message;
+  @Enumerated(value = EnumType.STRING)
+  private CutiStatus status;
+  @Column(columnDefinition="LONGTEXT")
   private String reason;
   private Year year;
   private LocalDateTime createdAt;

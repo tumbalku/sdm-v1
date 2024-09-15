@@ -1,4 +1,5 @@
 package com.sdm.app.model.req.update;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 
@@ -9,10 +10,8 @@ import lombok.*;
 @Builder
 public class UpdateUserRequest {
 
-
+  @Size(min = 6, message = "minimum {min} character")
   private String username;
-  private String newPassword;
-  private String confirmPassword;
 
   // social media
   private String phone;

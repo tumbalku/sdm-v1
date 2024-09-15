@@ -1,9 +1,12 @@
 package com.sdm.app.service.impl;
 
 import com.sdm.app.entity.*;
+import com.sdm.app.enumrated.CutiStatus;
 import com.sdm.app.enumrated.KopType;
 import com.sdm.app.model.req.create.CreateCutiRequest;
+import com.sdm.app.model.req.create.UserCreateCutiRequest;
 import com.sdm.app.model.req.search.SearchCutiRequest;
+import com.sdm.app.model.req.update.DecitionCutiRequest;
 import com.sdm.app.model.res.CutiResponse;
 import com.sdm.app.model.res.CutiTypeCount;
 import com.sdm.app.model.res.DataReportResponse;
@@ -49,6 +52,61 @@ public class CutiServiceImpl {
   private final PeopleRepository peopleRepository;
   private final CutiPdfService cutiPdfService;
 
+  @Transactional
+  public CutiResponse makeDecisionCuti(User admin, DecitionCutiRequest request){
+    GeneralHelper.isAdmin(admin);
+
+    Cuti cuti = getCuti(request.getId());
+    cuti.setStatus(request.getStatus());
+    cuti.setMessage(request.getMessage());
+    cuti.setUpdatedAt(LocalDateTime.now());
+
+    if(!request.getStatus().equals(CutiStatus.REJECT)){
+      Optional.ofNullable(request.getNumber()).ifPresent(cuti::setNumber);
+      Optional.ofNullable(request.getSignedBy()).filter(StringUtils::hasText).ifPresent(cuti::setSignedBy);
+
+      if(Objects.nonNull(request.getPeople()) && request.getPeople().size() != 0) {
+        cuti.getPeople().clear();
+        for (String people : request.getPeople()) {
+          People exsistingPeople = peopleRepository.findByNameIgnoreCase(people).orElse(null);
+          if(Objects.nonNull(exsistingPeople)){
+            cuti.getPeople().add(exsistingPeople);
+          }else{
+            People newPep = new People();
+            newPep.setName(people);
+            peopleRepository.save(newPep);
+            cuti.getPeople().add(newPep);
+          }
+        }
+      }
+    }
+
+    cutiRepository.save(cuti);
+    return ResponseConverter.cutiToResponse(cuti);
+  }
+
+  @Transactional
+  public CutiResponse userCreateCuti(User user, UserCreateCutiRequest request){
+    Cuti cuti = new Cuti();
+    cuti.setId(UUID.randomUUID().toString());
+    cuti.setUser(user);
+    cuti.setAddress(request.getAddress());
+    cuti.setStatus(CutiStatus.PENDING);
+    cuti.setReason(request.getReason());
+    cuti.setDateEnd(request.getDateEnd());
+    cuti.setDateStart(request.getDateStart());
+
+    cuti.setCreatedAt(LocalDateTime.now());
+    cuti.setUpdatedAt(LocalDateTime.now());
+
+    Kop kop = kopService.getKop(request.getKop());
+    cuti.setKop(kop);
+    cuti.setRomawi(kop.getRomawi());
+    cuti.setYear(kop.getYear());
+
+    cutiRepository.save(cuti);
+    return ResponseConverter.cutiToResponse(cuti);
+  }
 
   public Resource download(String id) throws MalformedURLException, FileNotFoundException {
 
@@ -113,7 +171,7 @@ public class CutiServiceImpl {
 
   @Transactional
   public void delete() {
-    LocalDate thresholdDate = LocalDate.now().minusDays(30);
+    LocalDate thresholdDate = LocalDate.now().minusDays(360);
     List<Cuti> expiredLeaves = cutiRepository.findByDateEndBefore(thresholdDate);
     cutiRepository.deleteAll(expiredLeaves);
     System.out.println("Expired leave records deleted: " + expiredLeaves.size());
@@ -132,6 +190,7 @@ public class CutiServiceImpl {
     cuti.setCreatedAt(LocalDateTime.now());
     cuti.setUpdatedAt(LocalDateTime.now());
     cuti.setAddress(request.getAddress());
+    cuti.setStatus(CutiStatus.APPROVE);
 
     if(Objects.nonNull(request.getPeople()) && request.getPeople().size() != 0){
       for (String people : request.getPeople()) {

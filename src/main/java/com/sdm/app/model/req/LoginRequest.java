@@ -14,10 +14,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class LoginRequest {
 
-  @NotBlank(message = "username must be not blank")
+  @NotBlank(message = "must be not blank")
+  @Size(min = 6, message = "length must be at least {min} character")
   private String username;
 
-  @NotBlank(message = "password must be not blank")
-  @Size(min = 5, message = "password length must be at least {min} character")
+  @NotBlank(message = "must be not blank")
+  @Size(min = 6, message = "length must be at least {min} character")
   private String password;
 }

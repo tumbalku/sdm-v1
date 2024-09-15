@@ -18,7 +18,10 @@ public class CutiResponse {
   private String address;
   private LocalDate dateStart;
   private LocalDate dateEnd;
-  private Integer number;
+  private String number;
+  private String reason;
+  private String message;
+  private String status;
   private List<String> people;
   private KopResponse kop;
   private SimpleUserResponse user;

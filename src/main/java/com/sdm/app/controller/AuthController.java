@@ -2,6 +2,7 @@ package com.sdm.app.controller;
 
 import com.sdm.app.entity.User;
 import com.sdm.app.model.req.LoginRequest;
+import com.sdm.app.model.req.update.UpdatePasswordRequest;
 import com.sdm.app.model.req.update.UpdateUserRequest;
 import com.sdm.app.model.res.LoginResponse;
 import com.sdm.app.model.res.SimpleUserResponse;
@@ -60,7 +61,7 @@ public class AuthController {
 
   @PatchMapping("/update/pwd")
   public WebResponse<SimpleUserResponse> updatePassword(User user,
-                                                        @RequestBody UpdateUserRequest request) {
+                                                        @RequestBody UpdatePasswordRequest request) {
 
     SimpleUserResponse response = userService.updatePassword(user, request);
     return WebResponse.<SimpleUserResponse>builder()

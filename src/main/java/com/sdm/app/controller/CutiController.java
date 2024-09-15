@@ -3,7 +3,9 @@ package com.sdm.app.controller;
 import com.sdm.app.entity.User;
 import com.sdm.app.enumrated.KopType;
 import com.sdm.app.model.req.create.CreateCutiRequest;
+import com.sdm.app.model.req.create.UserCreateCutiRequest;
 import com.sdm.app.model.req.search.SearchCutiRequest;
+import com.sdm.app.model.req.update.DecitionCutiRequest;
 import com.sdm.app.model.res.*;
 import com.sdm.app.service.impl.CutiServiceImpl;
 import com.sdm.app.utils.ResponseConverter;
@@ -50,14 +52,6 @@ public class CutiController {
             .message("Search Success")
             .pagination(ResponseConverter.getPagingResponse(response.getData()))
             .build();
-
-//    Page<CutiResponse> responses = cutiService.search(request);
-
-//    return WebResponseWithPaging.<List<CutiResponse>>builder()
-//            .data(responses.getContent())
-//            .message("Search Success")
-//            .pagination(ResponseConverter.getPagingResponse(responses))
-//            .build();
   }
 
   @GetMapping("/download/{id}")
@@ -76,6 +70,25 @@ public class CutiController {
     return new ResponseEntity<>(data, headers, HttpStatus.OK);
   }
 
+  @PatchMapping("/decision/{id}")
+  public WebResponse<CutiResponse> makeDecisionCuti(User user,
+                                              @PathVariable("id") String id,
+                                              @RequestBody DecitionCutiRequest request){
+    request.setId(id);
+    CutiResponse response = cutiService.makeDecisionCuti(user, request);
+    return WebResponse.<CutiResponse>builder()
+            .message("Cuti has been " + response.getMessage())
+            .data(response)
+            .build();
+  }
+  @PostMapping("/request")
+  public WebResponse<CutiResponse> createRequest(User user, @RequestBody UserCreateCutiRequest request) {
+    CutiResponse response = cutiService.userCreateCuti(user, request);
+    return WebResponse.<CutiResponse>builder()
+            .data(response)
+            .message("Cuti has been requested, please be patient!")
+            .build();
+  }
 
   @PostMapping
   public WebResponse<CutiResponse> create(User user, @RequestBody CreateCutiRequest request)
@@ -83,7 +96,7 @@ public class CutiController {
     CutiResponse response = cutiService.create(user, request);
     return WebResponse.<CutiResponse>builder()
             .data(response)
-            .message("Cuti has been requested, Please be patient!")
+            .message("Cuti has been created")
             .build();
   }
 

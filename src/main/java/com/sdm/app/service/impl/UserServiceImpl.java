@@ -1,6 +1,5 @@
 package com.sdm.app.service.impl;
 
-import ch.qos.logback.core.util.StringUtil;
 import com.sdm.app.entity.Address;
 import com.sdm.app.entity.Role;
 import com.sdm.app.entity.User;
@@ -8,10 +7,10 @@ import com.sdm.app.enumrated.Gender;
 import com.sdm.app.enumrated.UserStatus;
 import com.sdm.app.model.req.create.CreateUserRequest;
 import com.sdm.app.model.req.search.UserSearchRequest;
+import com.sdm.app.model.req.update.UpdatePasswordRequest;
 import com.sdm.app.model.req.update.UpdateUserRequest;
 import com.sdm.app.model.res.SimpleUserResponse;
 import com.sdm.app.model.res.UserResponse;
-import com.sdm.app.repository.FileRepository;
 import com.sdm.app.repository.RoleRepository;
 import com.sdm.app.repository.UserRepository;
 import com.sdm.app.security.BCrypt;
@@ -108,11 +107,15 @@ public class UserServiceImpl implements UserService {
     user.setWorkUnit(request.getWorkUnit());
     user.setStatus(UserStatus.ACTIVE);
 
-    // by default user must be an employee
-    Role role = roleRepository.findByName("EMPLOYEE")
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Please create the ROLE!"));
+    if(request.getRoles().size() < 1){
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please choose at least one Role!");
+    }
 
-    user.setRoles(Collections.singleton(role));
+    for (String role : request.getRoles()) {
+      Role exsistingRole = roleRepository.findByName(role)
+              .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong Role input"));
+      user.getRoles().add(exsistingRole);
+    }
 
     user.setCreatedAt(LocalDateTime.now());
     user.setUpdatedAt(LocalDateTime.now());
@@ -176,7 +179,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Transactional
-  public SimpleUserResponse updatePassword(User current, UpdateUserRequest request){
+  public SimpleUserResponse updatePassword(User current, UpdatePasswordRequest request){
 
     if(!request.getNewPassword().equals(request.getConfirmPassword())){
       throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Double check the new password and the confirm password!");

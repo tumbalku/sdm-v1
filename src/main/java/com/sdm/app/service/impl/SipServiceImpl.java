@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -81,16 +82,20 @@ public class SipServiceImpl {
 
   @Transactional
   public SipResponse create(User admin, CreateSipRequest request){
+
+
+    System.out.println();
     GeneralHelper.isAdmin(admin);
     Sip sip = new Sip();
     sip.setId(UUID.randomUUID().toString());
-    sip.setName(request.getName());
     sip.setUploadedAt(LocalDateTime.now());
     sip.setUpdatedAt(LocalDateTime.now());
     sip.setExpiredAt(request.getExpiredAt());
     Optional.ofNullable(request.getNum()).filter(StringUtils::hasText).ifPresent(sip::setNum);
-    User user = userService.getUser(request.getNip());
+    User user = userService.getUser(request.getUserId());
     sip.setUser(user);
+    String name = user.getName() + " - SIP - " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"));
+    sip.setName(name);
 
     if(Objects.nonNull(request.getFile())){
       FileResponse file = fileService.saveFile(request.getFile());
