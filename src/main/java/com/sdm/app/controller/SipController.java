@@ -84,12 +84,10 @@ public class SipController {
   public WebResponse<SipResponse> save(User user,
                                           @RequestParam(name = "file", required = false) MultipartFile file,
                                           @RequestParam(name = "userId", required = false) String userId,
-                                          @RequestParam(name = "name", required = false) String name,
                                           @RequestParam(name = "num", required = false) String num,
                                           @RequestParam(name = "expiredAt", required = false) LocalDate expiredAt){
 
     CreateSipRequest request = new CreateSipRequest();
-    request.setName(name);
     request.setUserId(userId);
     request.setFile(file);
     request.setNum(num);

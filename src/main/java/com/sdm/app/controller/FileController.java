@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 
 @RestController
 @RequestMapping("api/v1/file")
@@ -20,7 +22,9 @@ public class FileController {
 
   @GetMapping(path = "/image/{path}", produces = MediaType.IMAGE_PNG_VALUE)
   public ResponseEntity<?> getImage(@PathVariable("path") String path){
-
+    if(!Objects.nonNull(path)){
+      return null;
+    }
     return ResponseEntity.status(HttpStatus.OK)
             .body(fileService.getFile(path));
   }
