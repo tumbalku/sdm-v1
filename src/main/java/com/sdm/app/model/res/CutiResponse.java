@@ -24,7 +24,8 @@ public class CutiResponse {
   private String status;
   private List<String> people;
   private KopResponse kop;
-  private SimpleUserResponse user;
+//  private SimpleUserResponse user;
+  private UserLite user;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 

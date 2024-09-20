@@ -3,6 +3,7 @@ package com.sdm.app.controller;
 import com.sdm.app.entity.User;
 import com.sdm.app.model.req.create.CreatePostRequest;
 import com.sdm.app.model.req.search.SearchPostRequest;
+import com.sdm.app.model.req.update.PostPriorityRequest;
 import com.sdm.app.model.res.PostResponse;
 import com.sdm.app.model.res.WebResponse;
 import com.sdm.app.model.res.WebResponseWithPaging;
@@ -56,6 +57,18 @@ public class PostController {
             .build();
   }
 
+  @PatchMapping("priority/{id}")
+  public WebResponse<PostResponse> pinPriority(User user,
+                                               @PathVariable("id") String id,
+                                               @RequestBody PostPriorityRequest request){
+    request.setId(id);
+    PostResponse response = postService.pinPriority(user, request);
+
+    return WebResponse.<PostResponse>builder()
+            .data(response)
+            .message("Success update")
+            .build();
+  }
   @PatchMapping("/{id}")
   public WebResponse<PostResponse> update(User user, @PathVariable("id") String id, @RequestBody CreatePostRequest request){
     request.setId(id);
@@ -81,7 +94,7 @@ public class PostController {
   @DeleteMapping("/{id}")
   public WebResponse<PostResponse> delete(User user, @PathVariable("id") String id){
 
-    PostResponse response = postService.delete(id);
+    PostResponse response = postService.delete(user, id);
 
     return WebResponse.<PostResponse>builder()
             .data(response)

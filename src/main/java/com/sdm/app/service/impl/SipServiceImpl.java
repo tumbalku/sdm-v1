@@ -7,8 +7,8 @@ import com.sdm.app.model.req.search.SearchSipRequest;
 import com.sdm.app.model.req.update.UpdateSipRequest;
 import com.sdm.app.model.res.FileResponse;
 import com.sdm.app.model.res.SipDocResponse;
+import com.sdm.app.model.res.SipLiteResponse;
 import com.sdm.app.model.res.SipResponse;
-import com.sdm.app.repository.SipReportRepository;
 import com.sdm.app.repository.SipRepository;
 import com.sdm.app.utils.GeneralHelper;
 import com.sdm.app.utils.ResponseConverter;
@@ -141,5 +141,10 @@ public class SipServiceImpl {
   public Sip getSip(String id){
     return sipRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sip not found!"));
+  }
+
+  public List<SipLiteResponse> findAllSipLite() {
+    List<Sip> sips = sipRepository.findAll();
+    return sips.stream().map(ResponseConverter::sipLiteToResponse).collect(Collectors.toList());
   }
 }

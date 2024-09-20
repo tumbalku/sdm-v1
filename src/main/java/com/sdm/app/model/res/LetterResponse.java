@@ -22,10 +22,9 @@ public class LetterResponse {
   private String path;
   private String fileType;
   private Integer size;
-  @Enumerated(value = EnumType.STRING)
   private LetterType type;
   private LocalDate expiredAt;
   private LocalDateTime uploadedAt;
   private LocalDateTime updatedAt;
-  private SimpleUserResponse user;
+  private UserLite user;
 }

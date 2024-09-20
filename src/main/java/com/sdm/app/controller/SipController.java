@@ -4,10 +4,7 @@ import com.sdm.app.entity.User;
 import com.sdm.app.model.req.create.CreateSipRequest;
 import com.sdm.app.model.req.search.SearchSipRequest;
 import com.sdm.app.model.req.update.UpdateSipRequest;
-import com.sdm.app.model.res.SipDocResponse;
-import com.sdm.app.model.res.SipResponse;
-import com.sdm.app.model.res.WebResponse;
-import com.sdm.app.model.res.WebResponseWithPaging;
+import com.sdm.app.model.res.*;
 import com.sdm.app.service.impl.SipServiceImpl;
 import com.sdm.app.utils.FileHelper;
 import com.sdm.app.utils.ResponseConverter;
@@ -30,6 +27,14 @@ public class SipController {
 
   private final SipServiceImpl sipService;
 
+  @GetMapping("/test")
+  public WebResponse<List<SipLiteResponse>> search(){
+    List<SipLiteResponse> response = sipService.findAllSipLite();
+    return WebResponse.<List<SipLiteResponse>>builder()
+            .data(response)
+            .message("oke")
+            .build();
+  }
   @GetMapping("current")
   public WebResponse<List<SipResponse>> getCurrentSips(User user){
     List<SipResponse> response = sipService.findCurrentSips(user);

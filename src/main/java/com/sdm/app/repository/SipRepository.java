@@ -1,6 +1,5 @@
 package com.sdm.app.repository;
 
-import com.sdm.app.entity.Letter;
 import com.sdm.app.entity.Sip;
 import com.sdm.app.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

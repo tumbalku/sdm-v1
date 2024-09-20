@@ -27,7 +27,7 @@ public class Post {
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinColumn(name = "user", referencedColumnName = "id")
   private User user;
 

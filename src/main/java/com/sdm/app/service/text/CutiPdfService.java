@@ -143,10 +143,10 @@ public class CutiPdfService {
     String pangkat = user.getPangkat();
     String golongan = user.getGolongan();
 
-    if(Objects.nonNull(pangkat) && pangkat.isBlank()){
+    if(Objects.nonNull(pangkat) && !pangkat.isBlank()){
       String rankGroup = getValue(pangkat) + "/ " + getValue(golongan);
       userDetail.put("Pangkat / Gologan", rankGroup);
-    } else if(Objects.nonNull(golongan)){
+    } else {
       userDetail.put("Gologan", getValue(golongan));
     }
 
@@ -226,12 +226,13 @@ public class CutiPdfService {
     String pangkat = user.getPangkat();
     String golongan = user.getGolongan();
 
-    if(Objects.nonNull(pangkat) && pangkat.isBlank()){
+    if(Objects.nonNull(pangkat) && !pangkat.isBlank()){
       String rankGroup = getValue(pangkat) + "/ " + getValue(golongan);
       userDetail.put("Pangkat / Gologan", rankGroup);
     }else{
       userDetail.put("Gologan", getValue(golongan));
     }
+
     userDetail.put("Jabatan", getValue(user.getPosition()));
     userDetail.put("Unit Kerja", getValue(user.getWorkUnit()));
 

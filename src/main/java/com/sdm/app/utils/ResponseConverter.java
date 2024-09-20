@@ -5,8 +5,8 @@ import com.sdm.app.model.res.*;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +44,17 @@ public class ResponseConverter {
     }
 
     return response;
+  }
+
+  public static UserLite userToLiteResponse(User user){
+    return UserLite.builder()
+            .id(user.getId())
+            .nip(user.getNip())
+            .avatar(user.getAvatar())
+            .name(user.getName())
+            .workUnit(user.getWorkUnit())
+            .address(user.getAddress().getName())
+            .build();
   }
 
   public static SimpleUserResponse userToSimpleResponse(User user){
@@ -85,7 +96,7 @@ public class ResponseConverter {
             .expiredAt(letter.getExpiredAt())
             .updatedAt(letter.getUpdatedAt())
             .fileType(letter.getFileType())
-            .user(userToSimpleResponse(letter.getUser()))
+            .user(userToLiteResponse(letter.getUser()))
             .build();
   }
 
@@ -153,7 +164,7 @@ public class ResponseConverter {
             .dateStart(cuti.getDateStart())
             .signedBy(cuti.getSignedBy())
             .address(cuti.getAddress())
-            .user(userToSimpleResponse(cuti.getUser()))
+            .user(userToLiteResponse(cuti.getUser()))
             .number(cuti.getNumber())
             .id(cuti.getId())
             .createdAt(cuti.getCreatedAt())
@@ -179,17 +190,27 @@ public class ResponseConverter {
   }
 
   public static PostResponse postToResponse(Post post){
-    User user =  post.getUser();
     return PostResponse.builder()
             .id(post.getId())
             .title(post.getTitle())
-            .author(user.getName())
-            .avatar(user.getAvatar())
+            .user(userToLiteResponse(post.getUser()))
             .priority(post.getPriority())
             .imageUrl(post.getImage())
             .content(post.getContent())
             .createdAt(post.getCreatedAt())
             .updatedAt(post.getUpdatedAt())
             .build();
+  }
+
+  public static SipLiteResponse sipLiteToResponse(Sip sip) {
+    SipLiteResponse response =  SipLiteResponse.builder()
+            .num(sip.getNum())
+            .expiredAt(sip.getExpiredAt())
+            .user(userToLiteResponse(sip.getUser()))
+            .build();
+    if(Objects.nonNull(sip.getReports()) && sip.getReports().size() != 0){
+      response.setReports(sip.getReports().stream().map(ResponseConverter::sipReportToResponse).collect(Collectors.toList()));
+    }
+    return response;
   }
 }

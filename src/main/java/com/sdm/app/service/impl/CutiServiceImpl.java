@@ -136,8 +136,9 @@ public class CutiServiceImpl {
             ));
   }
   @Transactional(readOnly = true)
-  public DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> search(User admin, SearchCutiRequest request){
-    GeneralHelper.isAdmin(admin);
+//  public DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> search(User admin, SearchCutiRequest request){
+  public DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> search(SearchCutiRequest request){
+//    GeneralHelper.isAdmin(admin);
     int page = request.getPage() - 1;
 
     Specification<Cuti> specification = (root, query, builder) -> {
@@ -221,7 +222,7 @@ public class CutiServiceImpl {
   @Transactional
   public CutiResponse update(User admin, CreateCutiRequest request){
     GeneralHelper.isAdmin(admin);
-
+    System.out.println("get id from service = " + request.getId());
     Cuti cuti = getCuti(request.getId());
 
     Optional.ofNullable(request.getNumber()).ifPresent(cuti::setNumber);

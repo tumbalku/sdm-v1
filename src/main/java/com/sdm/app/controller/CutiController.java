@@ -33,7 +33,7 @@ public class CutiController {
   private final CutiServiceImpl cutiService;
 
   @GetMapping(path = "search", produces = MediaType.APPLICATION_JSON_VALUE)
-  public WebResponseWithPagingReport<List<CutiResponse>, Map<KopType, Long>> search (User user,
+  public WebResponseWithPagingReport<List<CutiResponse>, Map<KopType, Long>> search (
                                                                  @RequestParam(name = "name", required = false) String name,
                                                                  @RequestParam(name = "type", required = false) String type,
                                                                  @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
@@ -45,7 +45,7 @@ public class CutiController {
     request.setPage(page);
     request.setSize(size);
 
-    DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> response = cutiService.search(user, request);
+    DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> response = cutiService.search(request);
     return WebResponseWithPagingReport.<List<CutiResponse>, Map<KopType, Long>>builder()
             .data(response.getData().getContent())
             .report(response.getReport())
@@ -103,6 +103,7 @@ public class CutiController {
   @PatchMapping("/{id}")
   public WebResponse<CutiResponse> update(User user, @PathVariable("id") String id,
                                           @RequestBody CreateCutiRequest request) {
+    System.out.println("get id from controller = " + id);
     request.setId(id);
     CutiResponse response = cutiService.update(user, request);
     return WebResponse.<CutiResponse>builder()

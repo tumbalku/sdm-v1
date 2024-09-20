@@ -5,6 +5,7 @@ import com.sdm.app.entity.Post;
 import com.sdm.app.entity.User;
 import com.sdm.app.model.req.create.CreatePostRequest;
 import com.sdm.app.model.req.search.SearchPostRequest;
+import com.sdm.app.model.req.update.PostPriorityRequest;
 import com.sdm.app.model.res.PostResponse;
 import com.sdm.app.repository.PostRepository;
 import com.sdm.app.utils.GeneralHelper;
@@ -30,6 +31,15 @@ public class PostServiceImpl {
   private final PostRepository postRepository;
 
 
+  @Transactional
+  public PostResponse pinPriority(User admin, PostPriorityRequest request){
+    GeneralHelper.isAdmin(admin);
+    Post post = getPost(request.getId());
+    post.setPriority(request.getPriority());
+    postRepository.save(post);
+    return ResponseConverter.postToResponse(post);
+  }
+
   @Transactional(readOnly = true)
   private Post getPost(String id){
     return postRepository.findById(id)
@@ -43,7 +53,8 @@ public class PostServiceImpl {
   }
 
   @Transactional
-  public PostResponse delete(String id){
+  public PostResponse delete(User admin, String id){
+    GeneralHelper.isAdmin(admin);
     Post post = getPost(id);
     postRepository.delete(post);
     return ResponseConverter.postToResponse(post);

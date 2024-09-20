@@ -1,7 +1,7 @@
 package com.sdm.app.model.req.create;
 
 import lombok.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 public class CreateCutiRequest {
 
+  @JsonIgnore
   private String id;
   private LocalDate dateStart;
   private LocalDate dateEnd;

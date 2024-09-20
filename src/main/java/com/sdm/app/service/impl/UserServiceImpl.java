@@ -161,11 +161,13 @@ public class UserServiceImpl implements UserService {
     }
 
     user.setUsername(request.getUsername());
+    user.setPangkat(request.getPangkat());
+    user.setGolongan(request.getGolongan());
+
     Optional.ofNullable(request.getNip()).filter(StringUtils::hasText).ifPresent(user::setNip);
+    Optional.ofNullable(request.getName()).filter(StringUtils::hasText).ifPresent(user::setName);
     Optional.ofNullable(request.getEmail()).filter(StringUtils::hasText).ifPresent(user::setEmail);
     Optional.ofNullable(request.getPhone()).filter(StringUtils::hasText).ifPresent(user::setPhone);
-    Optional.ofNullable(request.getPangkat()).filter(StringUtils::hasText).ifPresent(user::setPangkat);
-    Optional.ofNullable(request.getGolongan()).filter(StringUtils::hasText).ifPresent(user::setGolongan);
     Optional.ofNullable(request.getPosition()).filter(StringUtils::hasText).ifPresent(user::setPosition);
     Optional.ofNullable(request.getWorkUnit()).filter(StringUtils::hasText).ifPresent(user::setWorkUnit);
     Optional.ofNullable(request.getGender()).filter(StringUtils::hasText)
