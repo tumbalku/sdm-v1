@@ -88,7 +88,7 @@ public class User {
   @JoinColumn(name = "address", referencedColumnName = "id")
   private Address address;
 
-  @OneToMany(mappedBy = "user")
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private List<Post> posts;
 
 }

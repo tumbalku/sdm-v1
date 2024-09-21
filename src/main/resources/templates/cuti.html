@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cuti Request Message</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@100..800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* reset============== */
+
+      html,
+      body,
+      div,
+      span,
+      applet,
+      object,
+      iframe,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      blockquote,
+      pre,
+      a,
+      abbr,
+      acronym,
+      address,
+      big,
+      cite,
+      code,
+      del,
+      dfn,
+      em,
+      img,
+      ins,
+      kbd,
+      q,
+      s,
+      samp,
+      small,
+      strike,
+      strong,
+      sub,
+      sup,
+      tt,
+      var,
+      b,
+      u,
+      i,
+      center,
+      dl,
+      dt,
+      dd,
+      ol,
+      ul,
+      li,
+      fieldset,
+      form,
+      label,
+      legend,
+      table,
+      caption,
+      tbody,
+      tfoot,
+      thead,
+      tr,
+      th,
+      td,
+      article,
+      aside,
+      canvas,
+      details,
+      embed,
+      figure,
+      figcaption,
+      footer,
+      header,
+      hgroup,
+      menu,
+      nav,
+      output,
+      ruby,
+      section,
+      summary,
+      time,
+      mark,
+      audio,
+      video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+      }
+
+      article,
+      aside,
+      details,
+      figcaption,
+      figure,
+      footer,
+      header,
+      hgroup,
+      menu,
+      nav,
+      section {
+        display: block;
+      }
+      body {
+        line-height: 1;
+      }
+      ol,
+      ul {
+        list-style: none;
+      }
+      blockquote,
+      q {
+        quotes: none;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+        content: "";
+        content: none;
+      }
+      table {
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+      /* reset============== */
+
+      /* my code */
+
+      body {
+        background-color: rgb(224, 224, 224);
+        font-family: "Playpen Sans", cursive;
+        font-optical-sizing: auto;
+      }
+      .container {
+        background-color: #fff;
+        margin: auto;
+        max-width: 600px;
+        /* background: rgb(170, 170, 170); */
+        height: fit-content;
+        /* font-family: Arial, Helvetica, sans-serif; */
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+          0 8px 10px -6px rgb(0 0 0 / 0.1);
+      }
+
+      header {
+        padding: 10px;
+        background: rgb(0, 130, 216);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      header a {
+        display: inline-block;
+      }
+      header p {
+        font-weight: bold;
+        font-size: 24px;
+        color: white;
+        text-decoration: underline rgb(0, 130, 216);
+        margin: 0;
+        padding: 0;
+      }
+      .logo {
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        gap: 10px;
+      }
+      .logo img {
+        width: 64px;
+        height: 64px;
+        object-fit: cover;
+      }
+
+      /* main */
+      main {
+        padding: 24px 16px;
+      }
+
+      .content-info {
+        display: flex;
+        flex-direction: column;
+        justify-items: center;
+        align-items: center;
+        gap: 30px;
+      }
+      .content-title {
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        letter-spacing: 0.025em;
+      }
+
+      .user-info {
+        max-width: 400px;
+      }
+      .user-name {
+        font-size: large;
+        font-weight: 400;
+        text-align: center;
+        margin-bottom: 10px;
+        line-height: 1.5rem;
+      }
+      .user-nip {
+        font-weight: 400;
+        text-align: center;
+      }
+      .content-detail {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        justify-items: center;
+        align-items: center;
+        gap: 18px;
+        text-align: center;
+      }
+      h4 {
+        font-weight: bold;
+      }
+      .content-detail h6 {
+        font-weight: 500;
+        color: rgb(114, 114, 114);
+        margin-bottom: 5px;
+      }
+      .content-detail p {
+        font-size: 12px;
+        line-height: 1.5em;
+        max-width: 500px;
+      }
+      .reason {
+        text-align: justify;
+      }
+      .tombol {
+        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .btn {
+        padding: 8px 20px;
+        cursor: pointer;
+        text-decoration: none;
+        background-color: rgb(0, 130, 216);
+        color: white;
+        font-weight: bold;
+        border-radius: 7px;
+        word-spacing: 0.05em;
+        transition: background-color 0.5s;
+      }
+      .btn:hover {
+        background-color: rgb(1, 105, 173);
+      }
+      p span {
+        font-weight: 600;
+      }
+      h1 span {
+        background-color: rgb(0, 130, 216);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 30px 0px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <a href="https://arubasdm.online">
+          <div class="logo">
+            <img src="https://arubasdm.online/image/sultra.png" alt="gambar" />
+            <p>SDM Bahteramas</p>
+          </div>
+        </a>
+      </header>
+      <main>
+        <div class="content-info">
+          <div class="user-info">
+            <h1 class="user-name" th:text="${name}"></h1>
+            <p class="user-nip" >NIP: <span th:text="${nip}"></span></p>
+          </div>
+          <h4>Mengajukan</h4>
+          <h1 class="content-title">
+            <span th:text="${type}"></span>
+          </h1>
+        </div>
+        <div class="content-detail">
+          <h4>Detail Permohonan</h4>
+          <div>
+            <h6>Alasan Mengajukan</h6>
+            <p class="reason" th:text="${reason}">
+            </p>
+          </div>
+          <div>
+            <h6>Tanggal</h6>
+            <p><span>6/22/17</span> sampai <span>6/22/17</span></p>
+          </div>
+          <div>
+            <h6>Alamat selama cuti</h6>
+            <p><span>Jambu batu</span></p>
+          </div>
+        </div>
+        <div class="tombol">
+          <a th:href="${url}" target="_blank" class="btn">Lihat</a>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

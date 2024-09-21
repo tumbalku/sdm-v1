@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cuti Request Message</title>
+    <style>
+      body {
+        background-color: #e0e0e0;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        background-color: #fff;
+        margin: auto;
+        max-width: 590px;
+        width: 95%;
+        height: fit-content;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+      }
+
+      header {
+        padding: 10px;
+        background-color: #0082d8;
+        text-align: center;
+      }
+
+      header p {
+        font-weight: bold;
+        font-size: 30px;
+        color: white;
+        margin: 0;
+      }
+
+      .logo img {
+        width: 74px;
+        height: 64px;
+        object-fit: cover;
+        display: inline-block;
+      }
+
+      /* Content styling */
+      main {
+        padding: 24px 16px;
+      }
+
+      .user-info h1 {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      .user-nip {
+        font-size: 16px;
+        margin-bottom: 40px;
+        text-align: center;
+      }
+
+      h4 {
+        font-weight: bold;
+        font-size: 24px;
+        margin: 15px;
+        text-align: center;
+      }
+
+      h6 {
+        font-size: 18px;
+        margin: 5px;
+      }
+      .content-info {
+        text-align: center;
+      }
+      .content-title {
+        font-size: 20px;
+        font-weight: bold;
+        padding: 10px;
+        background-color: #0082d8;
+        color: white;
+        display: inline-block;
+        border-radius: 20px 0;
+        text-align: center;
+      }
+
+      .content-detail {
+        text-align: center;
+        margin: 30px 0;
+      }
+
+      .content-detail p {
+        font-size: 16px;
+      }
+
+      .reason {
+        text-align: justify;
+      }
+
+      .tombol {
+        margin: 20px 0;
+        text-align: center;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #0082d8;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <a href="https://arubasdm.online">
+          <div class="logo">
+            <img src="https://arubasdm.online/image/sultra.png" alt="gambar" />
+          </div>
+          <p>SDM Bahteramas</p>
+        </a>
+      </header>
+      <main>
+        <div class="content-info">
+          <div class="user-info">
+            <h1 class="user-name" th:text="${name}"></h1>
+            <p class="user-nip">NIP: <span th:text="${nip}"></span></p>
+          </div>
+          <h4>Mengajukan</h4>
+          <h1 class="content-title" th:text="${type}"></h1>
+        </div>
+        <div class="content-detail">
+          <h4>Detail Permohonan</h4>
+          <div>
+            <h6>Alasan Mengajukan</h6>
+            <p class="reason" th:text="${reason}">
+              Butuh istirahat dan bersantai.
+            </p>
+          </div>
+          <div>
+            <h6>Tanggal</h6>
+            <p><span>6/22/17</span> sampai <span>6/22/17</span></p>
+          </div>
+          <div>
+            <h6>Alamat selama cuti</h6>
+            <p><span>Jambu batu</span></p>
+          </div>
+        </div>
+        <div class="tombol">
+          <a th:href="${url}" target="_blank" class="btn">Lihat</a>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
