@@ -147,13 +147,15 @@ public class CutiServiceImpl {
     return cutiRepository.findByUser(current).stream().map(ResponseConverter::cutiToResponse).collect(Collectors.toList());
   }
 
-  public Map<KopType, Long> getCountByType(CutiStatus status) {
+  public Map<KopType, Long> getCountByType(List<CutiStatus> statuses) {
     List<CutiTypeCount> results;
-    if (Objects.nonNull(status)) {
-      results = cutiRepository.countByType(status);
+
+    if (Objects.nonNull(statuses) && !statuses.isEmpty()) {
+      results = cutiRepository.countByType(statuses); // Panggil query dengan list status
     } else {
-      results = cutiRepository.countByAllTypes();
+      results = cutiRepository.countByAllTypes(); // Jika status tidak disediakan, hitung semua tipe
     }
+
 
     return results.stream()
             .collect(Collectors.toMap(
@@ -177,13 +179,11 @@ public class CutiServiceImpl {
         predicates.add(builder.equal(root.get("kop").get("type"), KopType.valueOf(request.getType())));
       }
 
-      if (Objects.nonNull(request.getStatus())) {
-        try {
-          CutiStatus status = CutiStatus.valueOf(request.getStatus());
-          predicates.add(builder.equal(root.get("status"), status));
-        } catch (IllegalArgumentException e) {
-          throw new IllegalArgumentException("Status cuti tidak valid: " + request.getStatus());
-        }
+      if (Objects.nonNull(request.getStatuses()) && !request.getStatuses().isEmpty()) {
+        List<CutiStatus> statusList = request.getStatuses().stream()
+                .map(CutiStatus::valueOf)
+                .collect(Collectors.toList());
+        predicates.add(root.get("status").in(statusList));
       }
 
       return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
@@ -195,8 +195,11 @@ public class CutiServiceImpl {
             .map(ResponseConverter::cutiToResponse)
             .collect(Collectors.toList());
 
-    Map<KopType, Long> counts = Objects.nonNull(request.getStatus()) ?
-            getCountByType(CutiStatus.valueOf(request.getStatus())) : new HashMap<>();
+    Map<KopType, Long> counts = getCountByType(
+            Objects.nonNull(request.getStatuses()) && !request.getStatuses().isEmpty() ?
+                    request.getStatuses().stream().map(CutiStatus::valueOf).collect(Collectors.toList()) :
+                    null
+    );
 
     DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> data = new DataReportResponse<>();
     data.setData(new PageImpl<>(userResponse, pageable, users.getTotalElements()));

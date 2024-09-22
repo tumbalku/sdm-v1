@@ -36,7 +36,7 @@ public class CutiController {
   public WebResponseWithPagingReport<List<CutiResponse>, Map<KopType, Long>> search (
                                                                  @RequestParam(name = "name", required = false) String name,
                                                                  @RequestParam(name = "type", required = false) String type,
-                                                                 @RequestParam(name = "status", required = false) String status,
+                                                                 @RequestParam(name = "statuses", required = false) List<String> statuses,
                                                                  @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                                                  @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
 
@@ -45,7 +45,7 @@ public class CutiController {
     request.setType(type);
     request.setPage(page);
     request.setSize(size);
-    request.setStatus(status);
+    request.setStatuses(statuses);
 
     DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> response = cutiService.search(request);
     return WebResponseWithPagingReport.<List<CutiResponse>, Map<KopType, Long>>builder()

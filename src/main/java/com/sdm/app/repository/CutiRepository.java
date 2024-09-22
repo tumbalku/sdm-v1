@@ -24,9 +24,9 @@ public interface CutiRepository extends JpaRepository<Cuti, String>, JpaSpecific
 //          "GROUP BY c.kop.type")
 @Query("SELECT new com.sdm.app.model.res.CutiTypeCount(c.kop.type, COUNT(c)) " +
         "FROM Cuti c " +
-        "WHERE c.status = :status " +
+        "WHERE c.status IN :statuses " +
         "GROUP BY c.kop.type")
-  List<CutiTypeCount> countByType(@Param("status") CutiStatus status);
+List<CutiTypeCount> countByType(@Param("statuses") List<CutiStatus> statuses);
 
   @Query("SELECT new com.sdm.app.model.res.CutiTypeCount(c.kop.type, COUNT(c)) " +
           "FROM Cuti c " +
