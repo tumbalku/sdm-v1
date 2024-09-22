@@ -18,4 +18,8 @@ public class EmailRequest {
   private String token;
   private String reason;
   private KopType type;
+  private String startDate;
+  private String endDate;
+  private String address;
+
 }

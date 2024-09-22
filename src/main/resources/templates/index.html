@@ -130,7 +130,7 @@
         <div class="content-info">
           <div class="user-info">
             <h1 class="user-name" th:text="${name}"></h1>
-            <p class="user-nip">NIP: <span th:text="${nip}"></span></p>
+            <p class="user-nip" th:if="${nip != null && !#strings.isEmpty(nip)}">NIP: <span th:text="${nip}"></span></p>
           </div>
           <h4>Mengajukan</h4>
           <h1 class="content-title" th:text="${type}"></h1>
@@ -139,17 +139,15 @@
           <h4>Detail Permohonan</h4>
           <div>
             <h6>Alasan Mengajukan</h6>
-            <p class="reason" th:text="${reason}">
-              Butuh istirahat dan bersantai.
-            </p>
+            <p class="reason" th:text="${reason}"></p>
           </div>
           <div>
             <h6>Tanggal</h6>
-            <p><span>6/22/17</span> sampai <span>6/22/17</span></p>
+            <p><span th:text="${start}"></span> sampai <span th:text="${end}"></span></p>
           </div>
           <div>
             <h6>Alamat selama cuti</h6>
-            <p><span>Jambu batu</span></p>
+            <p><span th:text="${address}"></span></p>
           </div>
         </div>
         <div class="tombol">

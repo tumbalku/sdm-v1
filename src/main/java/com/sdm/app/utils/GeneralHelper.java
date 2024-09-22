@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -57,5 +58,10 @@ public class GeneralHelper {
     return id + "-" + Objects.requireNonNull(file.getOriginalFilename()).replaceAll("\\s","-");
   }
 
+  public static DateTimeFormatter dateFormatter(){
+    Locale local = new Locale("id", "ID");
+    String pattern = "dd MMMM yyyy";
+    return DateTimeFormatter.ofPattern(pattern, local);
+  }
 
 }

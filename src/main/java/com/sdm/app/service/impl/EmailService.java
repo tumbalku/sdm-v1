@@ -35,6 +35,9 @@ public class EmailService {
       context.setVariable("name", request.getName());
       context.setVariable("nip", request.getNip());
       context.setVariable("reason", request.getReason());
+      context.setVariable("start", request.getStartDate());
+      context.setVariable("end", request.getEndDate());
+      context.setVariable("address", request.getAddress());
       context.setVariable("url", decisionUrl(fe_url, request.getToken()));
       context.setVariable("type", request.getType().getDescription());
 
@@ -46,7 +49,7 @@ public class EmailService {
       String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
 
       helper.setPriority(1);
-      helper.setSubject(request.getName() + " Mengajukan Cuti: " + request.getType().getDescription() + " " + timeStamp);
+      helper.setSubject(request.getName() + " Mengajukan " + request.getType().getDescription() + " " + timeStamp);
       helper.setTo("muhammadarsilalhabsy@gmail.com");
       helper.setText(text, true);
 

@@ -4,6 +4,7 @@ import com.sdm.app.entity.*;
 import com.sdm.app.enumrated.CutiStatus;
 import com.sdm.app.enumrated.KopType;
 import com.sdm.app.model.req.create.CreateCutiRequest;
+import com.sdm.app.model.req.create.EmailRequest;
 import com.sdm.app.model.req.create.UserCreateCutiRequest;
 import com.sdm.app.model.req.search.SearchCutiRequest;
 import com.sdm.app.model.req.update.DecitionCutiRequest;
@@ -39,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,6 +53,7 @@ public class CutiServiceImpl {
   private final UserServiceImpl userService;
   private final PeopleRepository peopleRepository;
   private final CutiPdfService cutiPdfService;
+  private final EmailService emailService;
 
   @Transactional
   public CutiResponse makeDecisionCuti(User admin, DecitionCutiRequest request){
@@ -88,7 +91,8 @@ public class CutiServiceImpl {
   @Transactional
   public CutiResponse userCreateCuti(User user, UserCreateCutiRequest request){
     Cuti cuti = new Cuti();
-    cuti.setId(UUID.randomUUID().toString());
+    String requestId = UUID.randomUUID().toString();
+    cuti.setId(requestId);
     cuti.setUser(user);
     cuti.setAddress(request.getAddress());
     cuti.setStatus(CutiStatus.PENDING);
@@ -105,6 +109,23 @@ public class CutiServiceImpl {
     cuti.setYear(kop.getYear());
 
     cutiRepository.save(cuti);
+
+    String start = GeneralHelper.dateFormatter().format(request.getDateStart());
+    String end = GeneralHelper.dateFormatter().format(request.getDateEnd());
+    String address = Objects.nonNull(request.getAddress()) ? request.getAddress() : user.getAddress().getName();
+    String nip = Objects.nonNull(user.getNip()) ? user.getNip() : null;
+    EmailRequest emailRequest = EmailRequest.builder()
+            .nip(nip)
+            .address(address)
+            .type(kop.getType())
+            .reason(request.getReason())
+            .name(user.getName())
+            .token(requestId)
+            .endDate(end)
+            .startDate(start)
+            .build();
+
+    emailService.sendEmailHTMLFormat(emailRequest);
     return ResponseConverter.cutiToResponse(cuti);
   }
 
@@ -126,8 +147,13 @@ public class CutiServiceImpl {
     return cutiRepository.findByUser(current).stream().map(ResponseConverter::cutiToResponse).collect(Collectors.toList());
   }
 
-  public Map<KopType, Long> getCountByType() {
-    List<CutiTypeCount> results = cutiRepository.countByType();
+  public Map<KopType, Long> getCountByType(CutiStatus status) {
+    List<CutiTypeCount> results;
+    if (Objects.nonNull(status)) {
+      results = cutiRepository.countByType(status);
+    } else {
+      results = cutiRepository.countByAllTypes();
+    }
 
     return results.stream()
             .collect(Collectors.toMap(
@@ -136,9 +162,7 @@ public class CutiServiceImpl {
             ));
   }
   @Transactional(readOnly = true)
-//  public DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> search(User admin, SearchCutiRequest request){
   public DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> search(SearchCutiRequest request){
-//    GeneralHelper.isAdmin(admin);
     int page = request.getPage() - 1;
 
     Specification<Cuti> specification = (root, query, builder) -> {
@@ -153,6 +177,14 @@ public class CutiServiceImpl {
         predicates.add(builder.equal(root.get("kop").get("type"), KopType.valueOf(request.getType())));
       }
 
+      if (Objects.nonNull(request.getStatus())) {
+        try {
+          CutiStatus status = CutiStatus.valueOf(request.getStatus());
+          predicates.add(builder.equal(root.get("status"), status));
+        } catch (IllegalArgumentException e) {
+          throw new IllegalArgumentException("Status cuti tidak valid: " + request.getStatus());
+        }
+      }
 
       return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
     };
@@ -162,7 +194,9 @@ public class CutiServiceImpl {
     List<CutiResponse> userResponse = users.getContent().stream()
             .map(ResponseConverter::cutiToResponse)
             .collect(Collectors.toList());
-    Map<KopType, Long> counts = getCountByType();
+
+    Map<KopType, Long> counts = Objects.nonNull(request.getStatus()) ?
+            getCountByType(CutiStatus.valueOf(request.getStatus())) : new HashMap<>();
 
     DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> data = new DataReportResponse<>();
     data.setData(new PageImpl<>(userResponse, pageable, users.getTotalElements()));

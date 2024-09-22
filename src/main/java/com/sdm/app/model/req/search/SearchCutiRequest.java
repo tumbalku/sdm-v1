@@ -1,5 +1,6 @@
 package com.sdm.app.model.req.search;
 
+import com.sdm.app.enumrated.CutiStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +15,8 @@ public class SearchCutiRequest {
 
   private String name;
   private String type;
+
+  private String status;
 
   @NotNull
   private Integer page;
