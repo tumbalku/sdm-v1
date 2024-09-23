@@ -3,10 +3,13 @@ package com.sdm.app.service.text;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.color.Color;
 import com.itextpdf.layout.border.Border;
+import com.itextpdf.layout.border.DottedBorder;
+import com.itextpdf.layout.border.DoubleBorder;
 import com.itextpdf.layout.border.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -108,6 +111,15 @@ public class PdfUtils {
 
     return new SolidBorder(color, volume);
   }
+
+  public static Table doubleBorder(float width, float volume, Color color){
+
+    Border grayBorder = new DoubleBorder(color, volume);
+    Table borderDivideHeaderAndContent = new Table(new float[] {width});
+    borderDivideHeaderAndContent.setBorder(grayBorder);
+
+    return borderDivideHeaderAndContent;
+  }
   public static Table underline(float width, float volume, Color color){
 
     Border grayBorder = new SolidBorder(color, volume);
@@ -135,33 +147,22 @@ public class PdfUtils {
   }
   public static  Cell setText(String data, float size){
     return new Cell().add(data)
-            .setCharacterSpacing(0.8f)
             .setBorder(Border.NO_BORDER)
             .setFontSize(size);
   }
-  public static  Cell setTextJustified(String data, float size){
-    return new Cell().add(data)
-            .setCharacterSpacing(1f)
-            .setWordSpacing(10f)
-//            .setTextAlignment(TextAlignment.JUSTIFIED)
-            .setBorder(Border.NO_BORDER)
-            .setFontSize(size);
-  }
+
   public static  Cell setText(String data){
     return new Cell().add(data)
-            .setCharacterSpacing(0.8f)
             .setBorder(Border.NO_BORDER);
   }
 
   public static  Cell tableHead(String data){
     return new Cell().add(data)
-            .setCharacterSpacing(0.8f)
             .setBold()
             .setPadding(5);
   }
   public static  Cell tableHead(String data, float size){
     return new Cell().add(data)
-            .setCharacterSpacing(0.8f)
             .setBold()
             .setPadding(5)
             .setFontSize(size);
@@ -169,7 +170,6 @@ public class PdfUtils {
 
   public static  Cell tableHead(String data, float size, Color color, float colorOpacity){
     return new Cell().add(data)
-            .setCharacterSpacing(0.8f)
             .setBold()
             .setPadding(5)
             .setBackgroundColor(color, colorOpacity)
@@ -177,36 +177,32 @@ public class PdfUtils {
   }
   public static  Cell tableData(String data, float size){
     return new Cell().add(data)
-            .setCharacterSpacing(0.8f)
-            .setPadding(5)
+//            .setPadding(5)
             .setFontSize(size);
   }
   public static  Cell tableDataNoBorder(String data, float size){
     return new Cell().add(data)
-            .setCharacterSpacing(0.8f)
             .setFontSize(size)
             .setBorder(Border.NO_BORDER);
   }
   public static  Cell tableDataBoldNoBorder(String data, float size){
     return new Cell().add(data)
             .setBold()
-            .setCharacterSpacing(0.8f)
             .setFontSize(size)
             .setBorder(Border.NO_BORDER);
   }
   public static  Cell tableData(String data){
     return new Cell().add(data)
-            .setPadding(5)
-            .setCharacterSpacing(0.8f);
+            .setPadding(5);
   }
   public static Table tableDataListKeyValue(Table table, Map<String, String> info){
     for (Map.Entry<String, String> entry : info.entrySet()) {
-      table.addCell(tableDataNoBorder(entry.getKey(), 9).setPaddingLeft(20f));
-      table.addCell(tableDataNoBorder(":", 9));
+      table.addCell(tableDataNoBorder(entry.getKey(), 12).setPaddingLeft(20f));
+      table.addCell(tableDataNoBorder(":", 12));
       if(entry.getKey().equalsIgnoreCase("nama")){
-        table.addCell(tableDataBoldNoBorder(entry.getValue(), 9).setCharacterSpacing(1));
+        table.addCell(tableDataBoldNoBorder(entry.getValue(), 12));
       }else{
-        table.addCell(tableDataNoBorder(entry.getValue(), 9));
+        table.addCell(tableDataNoBorder(entry.getValue(), 12));
       }
     }
     return table;
@@ -215,7 +211,7 @@ public class PdfUtils {
   public static void cellDataList(Table table, List<String> list){
     for (int i = 0; i < list.size(); i++) {
       table.addCell(new Cell().add(
-                      tableData(String.format("%d. %s", i + 1, list.get(i)), 9)
+                      tableData(String.format("%d. %s", i + 1, list.get(i)), 12)
                               .setPaddingTop(-2f)
                               .setPaddingBottom(-2f))
               .setBorder(Border.NO_BORDER));
@@ -224,16 +220,16 @@ public class PdfUtils {
 
   public static Table bigPoint(String number, String text){
     Table table = new Table(new float[]{20, 575});
-    table.addCell(setText(number, 9).setPaddingTop(10f));
-    table.addCell(setText(text, 9).setPaddingBottom(10f).setPaddingTop(10f));
+    table.addCell(setText(number, 12).setPaddingTop(10f));
+    table.addCell(setText(text, 12).setPaddingBottom(10f).setPaddingTop(10f).setTextAlignment(TextAlignment.JUSTIFIED));
     return table;
   }
 
   public static Table smallPoint(String number, String text){
     Table table = new Table(new float[]{20, 20, 555});
     table.addCell(setText(""));
-    table.addCell(setText(number, 9));
-    table.addCell(setText(text, 9));
+    table.addCell(setText(number, 12));
+    table.addCell(setText(text, 12).setTextAlignment(TextAlignment.JUSTIFIED));
     return table;
   }
 

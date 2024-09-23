@@ -32,15 +32,15 @@ class SdmBahteramasApplicationTests {
 		System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern)));
 	}
 
-	@Test
-	void sentEmail() {
-		EmailRequest request = new EmailRequest();
-		request.setName("Otong Surotong Markotong");
-		request.setNip("123456 789 0123 445");
-		request.setType(KopType.KARENA_ALASAN_PENTING);
-		request.setReason("Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolores voluptates iure amet libero placeat autem sit culpa nulla aliquam perspiciatis.");
-		request.setToken("atoken");
-
-		service.sendEmailHTMLFormat(request);
-	}
+//	@Test
+//	void sentEmail() {
+//		EmailRequest request = new EmailRequest();
+//		request.setName("Otong Surotong Markotong");
+//		request.setNip("123456 789 0123 445");
+//		request.setType(KopType.KARENA_ALASAN_PENTING);
+//		request.setReason("Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolores voluptates iure amet libero placeat autem sit culpa nulla aliquam perspiciatis.");
+//		request.setToken("atoken");
+//
+//		service.sendEmailHTMLFormat(request);
+//	}
 }

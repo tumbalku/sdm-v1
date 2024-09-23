@@ -21,10 +21,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -76,7 +73,7 @@ public class UserServiceImpl implements UserService {
       return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
     };
 
-    Pageable pageable = PageRequest.of(page, request.getSize());
+    Pageable pageable = PageRequest.of(page, request.getSize(), Sort.by(Sort.Direction.DESC, "updatedAt"));
     Page<User> users = userRepository.findAll(specification, pageable);
     List<SimpleUserResponse> userResponse = users.getContent().stream()
             .map(ResponseConverter::userToSimpleResponse)

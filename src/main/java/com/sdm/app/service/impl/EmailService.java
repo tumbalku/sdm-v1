@@ -2,7 +2,8 @@ package com.sdm.app.service.impl;
 
 import com.sdm.app.model.req.create.EmailRequest;
 import jakarta.mail.internet.MimeMessage;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -11,11 +12,9 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 
-@AllArgsConstructor
 @Service
 public class EmailService {
 
@@ -23,6 +22,15 @@ public class EmailService {
   public static final String UTF_8_ENCODING = "UTF-8";
   private final TemplateEngine templateEngine;
   private final JavaMailSender sender;
+
+  @Value("${email.to}")
+  private String to;
+
+  @Autowired
+  public EmailService(TemplateEngine templateEngine, JavaMailSender sender) {
+    this.templateEngine = templateEngine;
+    this.sender = sender;
+  }
 
   public static String decisionUrl(String base, String token){
     return base + "/cuti/decision/" + token;
@@ -50,7 +58,7 @@ public class EmailService {
 
       helper.setPriority(1);
       helper.setSubject(request.getName() + " Mengajukan " + request.getType().getDescription() + " " + timeStamp);
-      helper.setTo("muhammadarsilalhabsy@gmail.com");
+      helper.setTo(to);
       helper.setText(text, true);
 
       sender.send(message);

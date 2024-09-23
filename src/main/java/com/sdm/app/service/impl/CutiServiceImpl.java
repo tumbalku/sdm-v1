@@ -23,10 +23,7 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -35,6 +32,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -130,7 +128,7 @@ public class CutiServiceImpl {
     return ResponseConverter.cutiToResponse(cuti);
   }
 
-  public Resource download(String id) throws MalformedURLException, FileNotFoundException {
+  public Resource download(String id) throws IOException {
 
     Cuti cuti = getCuti(id);
     cutiPdfService.makeAnCutiReport(cuti);
@@ -190,7 +188,7 @@ public class CutiServiceImpl {
       return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
     };
 
-    Pageable pageable = PageRequest.of(page, request.getSize());
+    Pageable pageable = PageRequest.of(page, request.getSize(), Sort.by(Sort.Direction.DESC, "updatedAt"));
     Page<Cuti> users = cutiRepository.findAll(specification, pageable);
     List<CutiResponse> userResponse = users.getContent().stream()
             .map(ResponseConverter::cutiToResponse)

@@ -14,10 +14,7 @@ import com.sdm.app.utils.GeneralHelper;
 import com.sdm.app.utils.ResponseConverter;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -55,7 +52,7 @@ public class SipServiceImpl {
       return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
     };
 
-    Pageable pageable = PageRequest.of(page, request.getSize());
+    Pageable pageable = PageRequest.of(page, request.getSize(), Sort.by(Sort.Direction.DESC, "updatedAt"));
     Page<Sip> users = sipRepository.findAll(specification, pageable);
     List<SipResponse> userResponse = users.getContent().stream()
             .map(ResponseConverter::sipToResponse)
