@@ -30,4 +30,5 @@ public class CutiResponse {
   private LocalDateTime updatedAt;
 
   private String signedBy;
+  private String mark;
 }

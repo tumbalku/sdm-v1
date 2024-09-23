@@ -22,4 +22,5 @@ public class DecitionCutiRequest {
   private CutiStatus status;
   private List<String> people;
   private String signedBy;
+  private String mark;
 }

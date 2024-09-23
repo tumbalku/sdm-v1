@@ -288,12 +288,16 @@ public class CutiPdfService {
     String formatTddDate = cuti.getCreatedAt().format(dateFormatter());
     String ttdDate = String.format("Kendari, %s", formatTddDate);
 
+    User user = idsService.getUser(cuti.getSignedBy());
+    String rank = Objects.nonNull(user.getPangkat()) ? user.getPangkat() + " " + user.getGolongan() : user.getGolongan();
+    String nip = Objects.nonNull(user.getNip()) ? user.getNip() : "-";
+    String position = cuti.getMark().equalsIgnoreCase("Direktur") ? "Direktur," : cuti.getMark() + " Direktur,";
     Table ttd = new Table(new float[]{percentPerWidth(container, 11f / 12)});
     ttd.addCell(setText(ttdDate, 9).setPaddingTop(15f));
-    ttd.addCell(setTextBold("Direktur,", 8).setPaddingBottom(60f));
-    ttd.addCell(setTextBold("dr. H. Hasmudin, Sp.B", 8).setUnderline());
-    ttd.addCell(setText("Pembina Tk I. Gol IV/c", 8).setPaddingTop(-3f));
-    ttd.addCell(setText("NIP. 1234567880123", 8).setPaddingTop(-3f));
+    ttd.addCell(setTextBold(position, 8).setPaddingBottom(60f));
+    ttd.addCell(setTextBold(user.getName(), 8).setUnderline());
+    ttd.addCell(setText(rank, 8).setPaddingTop(-3f));
+    ttd.addCell(setText("NIP. " + nip, 8).setPaddingTop(-3f));
 
     tblTTD.addCell(new Cell().add(ttd).setBorder(Border.NO_BORDER));
     return tblTTD;

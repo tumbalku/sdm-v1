@@ -23,6 +23,7 @@ public class SimpleUserResponse {
   private Gender gender;
   private String workUnit;
   private String instagram;
+  private String position;
   private String linkedin;
   private String twitter;
   private String facebook;

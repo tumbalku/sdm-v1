@@ -67,6 +67,7 @@ public class CutiServiceImpl {
     if(!request.getStatus().equals(CutiStatus.REJECT)){
       Optional.ofNullable(request.getNumber()).ifPresent(cuti::setNumber);
       Optional.ofNullable(request.getSignedBy()).filter(StringUtils::hasText).ifPresent(cuti::setSignedBy);
+      Optional.ofNullable(request.getMark()).filter(StringUtils::hasText).ifPresent(cuti::setMark);
 
       if(Objects.nonNull(request.getPeople()) && request.getPeople().size() != 0) {
         cuti.getPeople().clear();
@@ -229,6 +230,7 @@ public class CutiServiceImpl {
     cuti.setUpdatedAt(LocalDateTime.now());
     cuti.setAddress(request.getAddress());
     cuti.setStatus(CutiStatus.APPROVE);
+    cuti.setMark(request.getMark());
 
     if(Objects.nonNull(request.getPeople()) && request.getPeople().size() != 0){
       for (String people : request.getPeople()) {
@@ -267,6 +269,7 @@ public class CutiServiceImpl {
     Optional.ofNullable(request.getDateStart()).ifPresent(cuti::setDateStart);
     Optional.ofNullable(request.getAddress()).filter(StringUtils::hasText).ifPresent(cuti::setAddress);
     Optional.ofNullable(request.getSignedBy()).filter(StringUtils::hasText).ifPresent(cuti::setSignedBy);
+    Optional.ofNullable(request.getMark()).filter(StringUtils::hasText).ifPresent(cuti::setMark);
 
     cuti.setUpdatedAt(LocalDateTime.now());
 

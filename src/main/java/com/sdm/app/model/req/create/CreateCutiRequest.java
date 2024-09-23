@@ -22,6 +22,7 @@ public class CreateCutiRequest {
   private Long kop;
   private String user;
   private String address;
+  private String mark;
 
   private String signedBy;
 }
