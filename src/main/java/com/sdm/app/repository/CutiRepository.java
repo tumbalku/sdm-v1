@@ -32,4 +32,13 @@ List<CutiTypeCount> countByType(@Param("statuses") List<CutiStatus> statuses);
           "FROM Cuti c " +
           "GROUP BY c.kop.type")
   List<CutiTypeCount> countByAllTypes();
+
+  List<Cuti> findByUserAndDateEndAfter(User user, LocalDate currentDate);
+  List<Cuti> findByUserAndStatus(User user, CutiStatus status);
+
+  List<Cuti> findByUserAndDateEndAfterAndStatus(User user, LocalDate currentDate, CutiStatus status);
+  List<Cuti> findByUserAndDateEndAfterAndStatusNot(User user, LocalDate currentDate, CutiStatus status);
+
+  @Query("SELECT c FROM Cuti c WHERE YEAR(c.createdAt) = :year AND c.status = :status")
+  List<Cuti> findByCreatedAtYearAndStatus(@Param("year") int year, @Param("status") CutiStatus status);
 }

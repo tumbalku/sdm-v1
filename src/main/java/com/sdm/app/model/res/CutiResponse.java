@@ -21,6 +21,7 @@ public class CutiResponse {
   private String number;
   private String reason;
   private String message;
+  private String workUnit;
   private String status;
   private List<String> people;
   private KopResponse kop;

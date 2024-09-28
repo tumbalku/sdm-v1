@@ -30,7 +30,7 @@ public class Cuti {
   @Column(nullable = false)
   private String romawi;
   private String address;
-
+  private String workUnit;
   @Column(columnDefinition="LONGTEXT")
   private String message;
   @Enumerated(value = EnumType.STRING)

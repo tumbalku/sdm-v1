@@ -2,18 +2,24 @@ package com.sdm.app.service.text;
 
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.color.Color;
+import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.pdf.PdfArray;
+import com.itextpdf.kernel.pdf.action.PdfAction;
+import com.itextpdf.kernel.pdf.annot.PdfLinkAnnotation;
 import com.itextpdf.layout.border.Border;
 import com.itextpdf.layout.border.DottedBorder;
 import com.itextpdf.layout.border.DoubleBorder;
 import com.itextpdf.layout.border.SolidBorder;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.property.TextAlignment;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
 
@@ -24,6 +30,7 @@ public class PdfUtils {
   protected static final float wFull = 595f;
   protected static final float hFull = 842f;
   protected static final float container = 570f;
+  protected static final float containerLandscape = 985f;
   private static final String[] units = {
           "", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas", "dua belas", "tiga belas", "empat belas", "lima belas", "enam belas", "tujuh belas", "delapan belas", "sembilan belas"
   };
@@ -147,6 +154,7 @@ public class PdfUtils {
   }
   public static  Cell setText(String data, float size){
     return new Cell().add(data)
+            .setPadding(0)
             .setBorder(Border.NO_BORDER)
             .setFontSize(size);
   }
@@ -197,12 +205,12 @@ public class PdfUtils {
   }
   public static Table tableDataListKeyValue(Table table, Map<String, String> info){
     for (Map.Entry<String, String> entry : info.entrySet()) {
-      table.addCell(tableDataNoBorder(entry.getKey(), 12).setPaddingLeft(20f));
-      table.addCell(tableDataNoBorder(":", 12));
+      table.addCell(setText(entry.getKey(), 12).setPaddingLeft(20f));
+      table.addCell(setText(":", 12));
       if(entry.getKey().equalsIgnoreCase("nama")){
-        table.addCell(tableDataBoldNoBorder(entry.getValue(), 12));
+        table.addCell(setText(entry.getValue(), 12).setBold());
       }else{
-        table.addCell(tableDataNoBorder(entry.getValue(), 12));
+        table.addCell(setText(entry.getValue(), 12));
       }
     }
     return table;
@@ -211,7 +219,7 @@ public class PdfUtils {
   public static void cellDataList(Table table, List<String> list){
     for (int i = 0; i < list.size(); i++) {
       table.addCell(new Cell().add(
-                      tableData(String.format("%d. %s", i + 1, list.get(i)), 12)
+                      setText(String.format("%d. %s", i + 1, list.get(i)), 12)
                               .setPaddingTop(-2f)
                               .setPaddingBottom(-2f))
               .setBorder(Border.NO_BORDER));
@@ -255,6 +263,47 @@ public class PdfUtils {
       return "-";
     }
     return data;
+  }
+
+  public static Cell link(String to, String text, int fontSize){
+    Paragraph paragraph = new Paragraph();
+
+    PdfLinkAnnotation linkAnnotation = new PdfLinkAnnotation(new Rectangle(0, 0, 0, 0));
+
+    linkAnnotation.setBorder(new PdfArray(new float[]{0, 0, 0}));
+
+    linkAnnotation.setAction(PdfAction.createURI(to));
+
+    paragraph.add(new Link(text, linkAnnotation));
+    return new Cell().add(paragraph.setFontSize(fontSize)).setPadding(0)
+            .setBorder(Border.NO_BORDER)
+            .setFontColor(Color.BLUE)
+            .setUnderline();
+  }
+
+  public static String formatLocalDateddMMyyyy(LocalDate date){
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    return date.format(formatter);
+  }
+
+  public static long calculateDaysBetween(LocalDate dateStart, LocalDate dateEnd) {
+    if (dateStart.equals(dateEnd)) {
+      return 1;
+    }
+    return ChronoUnit.DAYS.between(dateStart, dateEnd) + 1;
+  }
+
+
+  public static DateTimeFormatter dateDayFormatter(){
+    Locale local = new Locale("id", "ID");
+    String pattern = "dd";
+    return DateTimeFormatter.ofPattern(pattern, local);
+  }
+
+  public static DateTimeFormatter dateFormatter(){
+    Locale local = new Locale("id", "ID");
+    String pattern = "dd MMMM yyyy";
+    return DateTimeFormatter.ofPattern(pattern, local);
   }
 
 }

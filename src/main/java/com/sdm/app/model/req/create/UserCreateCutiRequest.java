@@ -18,6 +18,7 @@ public class UserCreateCutiRequest {
   @Size(min = 4, message = "minimum {min} character")
   private String reason;
   private Long kop;
+  private String workUnit;
   private String address;
 
 }

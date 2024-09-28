@@ -6,6 +6,7 @@ import com.sdm.app.model.req.create.CreateCutiRequest;
 import com.sdm.app.model.req.create.UserCreateCutiRequest;
 import com.sdm.app.model.req.search.SearchCutiRequest;
 import com.sdm.app.model.req.update.DecitionCutiRequest;
+import com.sdm.app.model.req.update.UpdateCutiRequest;
 import com.sdm.app.model.res.*;
 import com.sdm.app.service.impl.CutiServiceImpl;
 import com.sdm.app.utils.ResponseConverter;
@@ -56,6 +57,34 @@ public class CutiController {
             .build();
   }
 
+  @GetMapping("/download/blanko")
+  public ResponseEntity<byte[]> downloadBlanko(User user) throws IOException {
+
+    Resource resource = cutiService.getBlanko(user);
+
+    byte[] data = IOUtils.toByteArray(resource.getInputStream());
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_PDF);
+    headers.setContentDispositionFormData("attachment", "my-cuti-report.pdf");
+
+    return new ResponseEntity<>(data, headers, HttpStatus.OK);
+  }
+  @GetMapping("/download/reports")
+  public ResponseEntity<byte[]> downloadReports(User user,
+                                               @RequestParam(name = "year") int year) throws IOException {
+
+    Resource resource = cutiService.cutiReportYear(user, year);
+
+    byte[] data = IOUtils.toByteArray(resource.getInputStream());
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_PDF);
+    headers.setContentDispositionFormData("attachment", String.format("cuti-reports-%d.pdf", year));
+
+    return new ResponseEntity<>(data, headers, HttpStatus.OK);
+  }
+
   @GetMapping("/download/{id}")
   public ResponseEntity<byte[]> downloadFile(User user,
                                              @PathVariable("id") String id) throws IOException {
@@ -104,7 +133,7 @@ public class CutiController {
 
   @PatchMapping("/{id}")
   public WebResponse<CutiResponse> update(User user, @PathVariable("id") String id,
-                                          @RequestBody CreateCutiRequest request) {
+                                          @RequestBody UpdateCutiRequest request) {
     System.out.println("get id from controller = " + id);
     request.setId(id);
     CutiResponse response = cutiService.update(user, request);

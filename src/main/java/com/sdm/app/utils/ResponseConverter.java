@@ -161,6 +161,7 @@ public class ResponseConverter {
             .kop(kopToResponse(cuti.getKop()))
             .dateEnd(cuti.getDateEnd())
             .message(cuti.getMessage())
+            .workUnit(cuti.getWorkUnit())
             .reason(cuti.getReason())
             .dateStart(cuti.getDateStart())
             .signedBy(cuti.getSignedBy())

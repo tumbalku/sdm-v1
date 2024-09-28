@@ -1,8 +1,9 @@
-package com.sdm.app.model.req.create;
+package com.sdm.app.model.req.update;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.app.enumrated.CutiStatus;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateCutiRequest {
+public class UpdateCutiRequest {
 
   @JsonIgnore
   private String id;
@@ -27,5 +28,6 @@ public class CreateCutiRequest {
   private String message;
   private CutiStatus status;
   private String workUnit;
+
   private String signedBy;
 }
