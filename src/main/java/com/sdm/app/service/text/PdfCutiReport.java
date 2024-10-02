@@ -59,7 +59,7 @@ public class PdfCutiReport {
 
   private Table contentBody(int year){
     // Set table with 7 columns
-    float[] columnWidths = {30, 240, 140, 160, 60, 60, 200, 70};
+    float[] columnWidths = {30, 210, 140, 190, 60, 60, 200, 70};
     // {NO, NAMA, JENIS CUTI/IZIN, TMT CUTI/IZIN, UNITKERJA, KETERANGAN}
 
     Table table = new Table(columnWidths);
@@ -104,9 +104,9 @@ public class PdfCutiReport {
                 .setBorder(blackBorder)
                 .setTextAlignment(TextAlignment.CENTER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
-        String number = Objects.nonNull(data.getNumber()) ? data.getNumber() : "  ";
+        String number = Objects.nonNull(data.getNumber()) && !data.getNumber().isBlank() ? data.getNumber() : "    ";
         table.addCell(new Cell().add(setText(
-                String.format("%s/%s/RSUD/%s/%s", kop.getUniKop(), number, data.getRomawi(), data.getYear()), 10))
+                String.format("%s/%s/%s/RSUD/%s/%s", kop.getUniKop(), number, kop.getType().getSort(), data.getRomawi(), data.getYear()), 10))
                 .setBorder(blackBorder)
                 .setTextAlignment(TextAlignment.CENTER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
@@ -143,7 +143,7 @@ public class PdfCutiReport {
 
   private Table contentHead(int year) {
     Table head = new Table(new float[]{percentPerWidth(containerLandscape, 12f / 12)});
-    head.addCell(setText(String.format("BUKU CUTI/IZIN KEPEGAWAI TAHUN %d", year), 14).setBold().setTextAlignment(TextAlignment.CENTER));
+    head.addCell(setText(String.format("BUKU CUTI/IZIN KEPEGAWAIAN TAHUN %d", year), 14).setBold().setTextAlignment(TextAlignment.CENTER));
     return head;
   }
 

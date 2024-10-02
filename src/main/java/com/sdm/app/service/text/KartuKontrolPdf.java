@@ -1,6 +1,11 @@
 package com.sdm.app.service.text;
 
+import com.itextpdf.io.font.FontProgram;
+import com.itextpdf.io.font.FontProgramFactory;
+import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.color.Color;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -26,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.sdm.app.service.text.PdfComponents.cmToPt;
 import static com.sdm.app.service.text.PdfComponents.headerPortrait;
 import static com.sdm.app.service.text.PdfUtils.*;
 @Service
@@ -39,15 +45,21 @@ public class KartuKontrolPdf {
 
     String output = "temp-pdf/kartu-kontrol.pdf";
 
+    FontProgram fontProgram = FontProgramFactory.createFont("arial-font/arial.ttf");
+    PdfFont fontArial = PdfFontFactory.createFont(
+            fontProgram, PdfEncodings.WINANSI, true);
     PdfWriter writer = new PdfWriter(output);
     PdfDocument pdfDocument = new PdfDocument(writer);
     pdfDocument.setDefaultPageSize(PageSize.LEGAL);
 
+    float margin = cmToPt(1f);
     // document
     Document document = new Document(pdfDocument);
+    document.setFont(fontArial);
+    document.setMargins(cmToPt(2.54f), margin, margin, cmToPt(2.54f));
     document.add(headerPortrait());
-    document.add(doubleBorder(container, 0.2f , Color.BLACK).setMarginBottom(0.8f).setMarginTop(2));
-    document.add(doubleBorder(container, 0.8f , Color.BLACK).setMarginBottom(20f));
+    document.add(doubleBorder(container, 0.5f , Color.BLACK).setMarginBottom(1f).setMarginTop(2));
+    document.add(doubleBorder(container, 1f , Color.BLACK).setMarginBottom(20f));
     document.add(contentHead(user));
     document.add(contentBody(user).setMarginTop(10));
 

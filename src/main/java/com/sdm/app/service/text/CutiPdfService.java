@@ -2,6 +2,13 @@ package com.sdm.app.service.text;
 
 
 
+import com.itextpdf.io.font.FontProgram;
+import com.itextpdf.io.font.FontProgramFactory;
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.layout.border.SolidBorder;
+import com.itextpdf.layout.element.LineSeparator;
 import com.sdm.app.entity.Cuti;
 import com.sdm.app.entity.Kop;
 import com.sdm.app.entity.User;
@@ -24,6 +31,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static com.sdm.app.service.text.PdfComponents.cmToPt;
 import static com.sdm.app.service.text.PdfComponents.headerPortrait;
 import static com.sdm.app.service.text.PdfUtils.*;
 
@@ -37,6 +45,9 @@ public class CutiPdfService {
     User user = cuti.getUser();
     String output = "temp-pdf/output.pdf";
 
+    FontProgram fontProgram = FontProgramFactory.createFont("arial-font/arial.ttf");
+    PdfFont fontArial = PdfFontFactory.createFont(
+            fontProgram, PdfEncodings.WINANSI, true);
     PdfWriter writer = new PdfWriter(output);
     PdfDocument pdfDocument = new PdfDocument(writer);
     pdfDocument.setDefaultPageSize(PageSize.LEGAL);
@@ -50,17 +61,18 @@ public class CutiPdfService {
       core = core(user, cuti);
     }
 
-    Table signed = signed(cuti);
-    Table tembusan = tembusan(cuti);
+    float margin = cmToPt(2.54f);
 
     // document
     Document document = new Document(pdfDocument);
+    document.setFont(fontArial);
+    document.setMargins(margin, margin, margin, margin);
     document.add(headerPortrait());
-    document.add(doubleBorder(container, 0.1f , Color.BLACK).setMarginBottom(2f).setMarginTop(2));
-    document.add(doubleBorder(container, 0.5f , Color.BLACK).setMarginBottom(20f));
+    document.add(doubleBorder(container, 0.5f , Color.BLACK).setMarginBottom(1f).setMarginTop(2));
+    document.add(doubleBorder(container, 1f , Color.BLACK).setMarginBottom(20f));
     document.add(core);
-    document.add(signed);
-    document.add(tembusan);
+    document.add(signed(cuti));
+    document.add(tembusan(cuti));
 
     document.close();
 
@@ -264,8 +276,8 @@ public class CutiPdfService {
     ttd.addCell(setText(ttdDate, 12).setPaddingTop(15f).setPaddingBottom(5));
     ttd.addCell(setText("Direktur,", 12).setBold().setPaddingBottom(60f));
     ttd.addCell(setText(user.getName(), 12).setBold().setUnderline());
-    ttd.addCell(setText(rank, 12).setPaddingTop(-3f));
-    ttd.addCell(setText("NIP. " + nip, 12).setPaddingTop(-3f));
+    ttd.addCell(setText(rank, 12).setPaddingTop(-5f));
+    ttd.addCell(setText("NIP. " + nip, 12).setPaddingTop(-4f));
 
     tblTTD.addCell(new Cell().add(ttd).setBorder(Border.NO_BORDER));
     return tblTTD;
@@ -277,7 +289,7 @@ public class CutiPdfService {
 
     tembusanHeader.addCell(setText("Tembusan :", 12).setBold().setUnderline());
     tembusanHeader.addCell(setText("Disampaikan Kepada Yth,", 12).setPaddingTop(1).setPaddingLeft(-12));
-    tembusan.addCell(new Cell().add(tembusanHeader).setBorder(Border.NO_BORDER).setPaddingTop(30f));
+    tembusan.addCell(new Cell().add(tembusanHeader).setBorder(Border.NO_BORDER).setPaddingTop(30f).setPaddingBottom(-2f));
 
     List<String> tembusanList = new LinkedList<>();
 

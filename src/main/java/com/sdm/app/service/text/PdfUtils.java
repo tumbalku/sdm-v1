@@ -121,7 +121,7 @@ public class PdfUtils {
 
   public static Table doubleBorder(float width, float volume, Color color){
 
-    Border grayBorder = new DoubleBorder(color, volume);
+    Border grayBorder = new SolidBorder(color, volume);
     Table borderDivideHeaderAndContent = new Table(new float[] {width});
     borderDivideHeaderAndContent.setBorder(grayBorder);
 
@@ -220,21 +220,21 @@ public class PdfUtils {
     for (int i = 0; i < list.size(); i++) {
       table.addCell(new Cell().add(
                       setText(String.format("%d. %s", i + 1, list.get(i)), 12)
-                              .setPaddingTop(-2f)
-                              .setPaddingBottom(-2f))
+                              .setPaddingTop(-4f)
+                              .setPaddingBottom(-4f))
               .setBorder(Border.NO_BORDER));
     }
   }
 
   public static Table bigPoint(String number, String text){
-    Table table = new Table(new float[]{20, 575});
+    Table table = new Table(new float[]{21, 574});
     table.addCell(setText(number, 12).setPaddingTop(10f));
     table.addCell(setText(text, 12).setPaddingBottom(10f).setPaddingTop(10f).setTextAlignment(TextAlignment.JUSTIFIED));
     return table;
   }
 
   public static Table smallPoint(String number, String text){
-    Table table = new Table(new float[]{20, 20, 555});
+    Table table = new Table(new float[]{25, 20, 550});
     table.addCell(setText(""));
     table.addCell(setText(number, 12));
     table.addCell(setText(text, 12).setTextAlignment(TextAlignment.JUSTIFIED));

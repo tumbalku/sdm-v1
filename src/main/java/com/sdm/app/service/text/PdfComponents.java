@@ -3,6 +3,7 @@ package com.sdm.app.service.text;
 import com.itextpdf.layout.border.Border;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +15,17 @@ import static com.sdm.app.service.text.PdfUtils.image;
 @Service
 public class PdfComponents {
 
+  public static final float CM_TO_PT = 28.35f;
+
+  public static float cmToPt(float cm){
+    return cm * CM_TO_PT;
+  }
   public static Table headerLandscape() throws IOException {
     Table header = new Table(new float[]{
-            percentPerWidth(containerLandscape, 2.0f / 12),
-            percentPerWidth(containerLandscape, 10.0f / 12),
+            10, 10
     });
 
-    // header title
-    Table headerTitle = new Table(new float[]{percentPerWidth(containerLandscape, 12f / 12)});
+    Table headerTitle = new Table(new float[]{10});
 
     headerTitle.addCell(setText("PEMERINTAH PROVINSI SULAWESI TENGGARA", 12f)
             .setBold()
@@ -38,28 +42,27 @@ public class PdfComponents {
             .setTextAlignment(TextAlignment.CENTER)
             .setPaddingBottom(-5.f)
     );
-    Table socials = new Table(new float[]{5, 129, 10, 129});
+    Table socials = new Table(new float[]{10, 10, 10, 10});
     socials.addCell(setText("Email :", 9).setBold().setItalic());
-    socials.addCell(link("mailto:admin@rsud-bahteramas.go.id", "admin@rsud-bahteramas.go.id", 9).setPaddingLeft(-2f));
-    socials.addCell(setText("Website :", 9).setBold().setItalic().setPaddingLeft(-5f));
+    socials.addCell(link("mailto:admin@rsud-bahteramas.go.id", "admin@rsud-bahteramas.go.id ", 9).setPaddingLeft(-2f));
+    socials.addCell(setText("Website :", 9).setBold().setItalic());
     socials.addCell(link("www.rsud-bahteramas.go.id", "www.rsud-bahteramas.go.id", 9).setPaddingLeft(-2f));
-
-    headerTitle.addCell(new Cell().add(socials).setBorder(Border.NO_BORDER).setPaddingLeft(280f));
+    socials.setHorizontalAlignment(HorizontalAlignment.CENTER);
+    headerTitle.addCell(new Cell().add(socials).setBorder(Border.NO_BORDER));
 
     header.addCell(new Cell().add(image("logo.png")
-                    .setWidth(56f)
+                    .setWidth(60f)
                     .setHeight(56f))
             .setBorder(Border.NO_BORDER)
-            .setPaddingLeft(245)
     );
-    header.addCell(new Cell().add(headerTitle).setPaddingLeft(-245f).setBorder(Border.NO_BORDER));
-
+    header.addCell(new Cell().add(headerTitle).setBorder(Border.NO_BORDER));
+    header.setHorizontalAlignment(HorizontalAlignment.CENTER);
     return header;
   }
   public static Table headerPortrait() throws IOException {
     Table header = new Table(new float[]{
-            percentPerWidth(container, 2.0f / 12),
-            percentPerWidth(container, 10.0f / 12),
+            percentPerWidth(container, 1.0f / 12),
+            percentPerWidth(container, 11.0f / 12),
     });
 
     // header title
@@ -80,21 +83,20 @@ public class PdfComponents {
             .setTextAlignment(TextAlignment.CENTER)
             .setPaddingBottom(-5.f)
     );
-    Table socials = new Table(new float[]{5, 129, 10, 129});
+    Table socials = new Table(new float[]{10, 10, 10, 10});
     socials.addCell(setText("Email :", 9).setBold().setItalic());
-    socials.addCell(link("mailto:admin@rsud-bahteramas.go.id", "admin@rsud-bahteramas.go.id", 9).setPaddingLeft(-5f));
-    socials.addCell(setText("Website :", 9).setBold().setItalic().setPaddingLeft(-5f));
-    socials.addCell(link("www.rsud-bahteramas.go.id", "www.rsud-bahteramas.go.id", 9).setPaddingLeft(-5f));
-
-    headerTitle.addCell(new Cell().add(socials).setBorder(Border.NO_BORDER).setPaddingLeft(85f));
+    socials.addCell(link("mailto:admin@rsud-bahteramas.go.id", "admin@rsud-bahteramas.go.id ", 9).setPaddingLeft(-2f));
+    socials.addCell(setText("Website :", 9).setBold().setItalic());
+    socials.addCell(link("www.rsud-bahteramas.go.id", "www.rsud-bahteramas.go.id", 9).setPaddingLeft(-2f));
+    socials.setHorizontalAlignment(HorizontalAlignment.CENTER);
+    headerTitle.addCell(new Cell().add(socials).setBorder(Border.NO_BORDER));
 
     header.addCell(new Cell().add(image("logo.png")
-                    .setWidth(56f)
+                    .setWidth(60f)
                     .setHeight(56f))
             .setBorder(Border.NO_BORDER)
-            .setPaddingLeft(25)
     );
-    header.addCell(new Cell().add(headerTitle).setPaddingLeft(-50f).setBorder(Border.NO_BORDER));
+    header.addCell(new Cell().add(headerTitle).setBorder(Border.NO_BORDER));
 
     return header;
   }
