@@ -22,8 +22,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
+import static com.sdm.app.service.text.PdfComponents.cmToPt;
 import static com.sdm.app.service.text.PdfComponents.headerLandscape;
 import static com.sdm.app.service.text.PdfUtils.*;
 
@@ -45,6 +45,7 @@ public class PdfCutiReport {
 
     // document
     Document document = new Document(pdfDocument);
+    document.setTopMargin(cmToPt(2.54f));
     document.add(headerLandscape());
     document.add(doubleBorder(containerLandscape, 0.2f , Color.BLACK).setMarginBottom(0.8f).setMarginTop(2));
     document.add(doubleBorder(containerLandscape, 0.8f , Color.BLACK).setMarginBottom(20f));
@@ -123,7 +124,7 @@ public class PdfCutiReport {
                 .setBorder(blackBorder)
                 .setTextAlignment(TextAlignment.CENTER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
-        table.addCell(new Cell().add(setText(String.format("%d Hari", calculateDaysBetween(data.getDateStart(), data.getDateEnd())) , 10)).setBorder(blackBorder)
+        table.addCell(new Cell().add(setText(String.format("%d Hari", data.getTotal()) , 10)).setBorder(blackBorder)
                 .setTextAlignment(TextAlignment.CENTER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
       }else{

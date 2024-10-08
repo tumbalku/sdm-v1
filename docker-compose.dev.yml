@@ -1,0 +1,44 @@
+version: "3"
+services:
+  spring-app:
+    build:
+      context: .
+      args:
+        NODE_ENV: development
+    volumes:
+      - "./:/app"   # Sinkronisasi file lokal dengan container
+      - ~/.m2:/root/.m2
+    environment:
+      SPRING_PROFILES_ACTIVE : dev  # Default profile jika tidak ditentukan
+      SPRING_DATASOURCE_URL : jdbc:mysql://db:3306/dbdev
+      SPRING_DATASOURCE_USERNAME : root
+      SPRING_DATASOURCE_PASSWORD : root
+      SPRING_JPA_HIBERNATE_DDL_AUTO : update
+    command: ["mvn", "spring-boot:run"] # Jalankan Spring Boot dalam mode development
+    depends_on:
+      - db
+    networks:
+      - app-network
+    ports:
+      - "8080:8080"  # Mapping port ke host
+    restart: always
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-db-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: dbdev
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+    volumes:
+      - db-data-dev:/var/lib/mysql
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data-dev:

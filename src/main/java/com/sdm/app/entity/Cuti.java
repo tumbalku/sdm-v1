@@ -51,6 +51,8 @@ public class Cuti {
 
   private String signedBy;
   private String mark;
+  private Integer total;
+  private String document;
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "kop_id", referencedColumnName = "id",  nullable = false)
   private Kop kop;

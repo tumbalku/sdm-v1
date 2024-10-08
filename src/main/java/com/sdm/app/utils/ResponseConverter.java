@@ -157,10 +157,12 @@ public class ResponseConverter {
 
   public static CutiResponse cutiToResponse(Cuti cuti) {
     CutiResponse response = CutiResponse.builder()
+            .total(cuti.getTotal())
             .status(cuti.getStatus().getDescription())
             .kop(kopToResponse(cuti.getKop()))
             .dateEnd(cuti.getDateEnd())
             .message(cuti.getMessage())
+            .document(cuti.getDocument())
             .workUnit(cuti.getWorkUnit())
             .reason(cuti.getReason())
             .dateStart(cuti.getDateStart())

@@ -2,7 +2,9 @@ package com.sdm.app.service.impl;
 
 import com.sdm.app.entity.File;
 import com.sdm.app.entity.Letter;
+import com.sdm.app.model.res.DocResponse;
 import com.sdm.app.model.res.FileResponse;
+import com.sdm.app.model.res.SipDocResponse;
 import com.sdm.app.repository.FileRepository;
 import com.sdm.app.utils.FileHelper;
 import com.sdm.app.utils.GeneralHelper;
@@ -58,9 +60,18 @@ public class FileServiceImpl {
     return URL;
   }
 
+  public DocResponse getDoc(String path){
+    DocResponse response = new DocResponse();
+    File file = findByPath(path);
+    response.setFilename(file.getName());
+    response.setType(file.getType());
+    response.setData(FileHelper.decompress(file.getData()));
+    return response;
+  }
+
   public byte[] getFile(String path) {
-    File image = findByPath(path);
-    return FileHelper.decompress(image.getData());
+    File file = findByPath(path);
+    return FileHelper.decompress(file.getData());
   }
   public File findByPath(String path){
     return repository.findByPath(path)
@@ -69,7 +80,6 @@ public class FileServiceImpl {
 
   @Transactional
   public void removePrevFile(String path) {
-    findByPath(path);
     repository.deleteByPath(path);
   }
 }

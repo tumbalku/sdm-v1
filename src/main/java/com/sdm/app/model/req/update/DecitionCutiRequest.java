@@ -23,4 +23,5 @@ public class DecitionCutiRequest {
   private List<String> people;
   private String signedBy;
   private String mark;
+  private Integer total;
 }

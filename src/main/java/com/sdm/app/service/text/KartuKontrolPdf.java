@@ -124,7 +124,7 @@ public class KartuKontrolPdf {
                 .setTextAlignment(TextAlignment.CENTER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
 
-        table.addCell(new Cell().add(setText(String.format("%d Hari", calculateDaysBetween(data.getDateStart(), data.getDateEnd())) , 10)).setBorder(blackBorder)
+        table.addCell(new Cell().add(setText(String.format("%d Hari", data.getTotal()) , 10)).setBorder(blackBorder)
                 .setTextAlignment(TextAlignment.CENTER)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
       }else{

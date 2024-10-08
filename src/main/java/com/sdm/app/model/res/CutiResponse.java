@@ -30,6 +30,8 @@ public class CutiResponse {
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 
+  private Integer total;
+  private String document;
   private String signedBy;
   private String mark;
 }

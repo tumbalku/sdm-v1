@@ -11,6 +11,7 @@ import com.sdm.app.utils.ResponseConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -70,6 +71,19 @@ public class SipController {
             .message("Search Success")
             .pagination(ResponseConverter.getPagingResponse(responses))
             .build();
+  }
+
+  @GetMapping("pdf/{id}")
+  public ResponseEntity<byte[]> getPdf(@PathVariable("id") String id) {
+    // Ambil file dari database atau file system
+    SipDocResponse response = sipService.getSipDoc(id);
+
+    // Set headers untuk pengiriman PDF
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_PDF);
+    headers.setContentDispositionFormData("inline", "file.pdf");
+
+    return new ResponseEntity<>(response.getData(), headers, HttpStatus.OK);
   }
 
   @GetMapping("/download/{id}")

@@ -1,7 +1,9 @@
 package com.sdm.app.controller;
 
 import com.sdm.app.entity.User;
+import com.sdm.app.enumrated.CutiStatus;
 import com.sdm.app.enumrated.KopType;
+import com.sdm.app.model.req.RemoveFileCutiRequest;
 import com.sdm.app.model.req.create.CreateCutiRequest;
 import com.sdm.app.model.req.create.UserCreateCutiRequest;
 import com.sdm.app.model.req.search.SearchCutiRequest;
@@ -19,10 +21,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +61,7 @@ public class CutiController {
             .build();
   }
 
+//  Download
   @GetMapping("/download/blanko")
   public ResponseEntity<byte[]> downloadBlanko(User user) throws IOException {
 
@@ -84,7 +89,6 @@ public class CutiController {
 
     return new ResponseEntity<>(data, headers, HttpStatus.OK);
   }
-
   @GetMapping("/download/{id}")
   public ResponseEntity<byte[]> downloadFile(User user,
                                              @PathVariable("id") String id) throws IOException {
@@ -113,7 +117,25 @@ public class CutiController {
             .build();
   }
   @PostMapping("/request")
-  public WebResponse<CutiResponse> createRequest(User user, @RequestBody UserCreateCutiRequest request) {
+  public WebResponse<CutiResponse> createRequest(User user,
+                                                 @RequestParam(name = "dateStart", required = false) LocalDate dateStart,
+                                                 @RequestParam(name = "dateEnd", required = false) LocalDate dateEnd,
+                                                 @RequestParam(name = "address", required = false) String address,
+                                                 @RequestParam(name = "reason", required = false) String reason,
+                                                 @RequestParam(name = "workUnit", required = false) String workUnit,
+                                                 @RequestParam(name = "kop", required = false) Long kop,
+                                                 @RequestParam(name = "total", required = false) Integer total,
+                                                 @RequestParam(name = "file", required = false) MultipartFile file) {
+    UserCreateCutiRequest request = new UserCreateCutiRequest();
+    request.setAddress(address);
+    request.setReason(reason);
+    request.setKop(kop);
+    request.setDateEnd(dateEnd);
+    request.setDateStart(dateStart);
+    request.setWorkUnit(workUnit);
+    request.setTotal(total);
+    request.setFile(file);
+
     CutiResponse response = cutiService.userCreateCuti(user, request);
     return WebResponse.<CutiResponse>builder()
             .data(response)
@@ -122,8 +144,41 @@ public class CutiController {
   }
 
   @PostMapping
-  public WebResponse<CutiResponse> create(User user, @RequestBody CreateCutiRequest request)
-          throws MalformedURLException, FileNotFoundException {
+  public WebResponse<CutiResponse> create(User user,
+                                          @RequestParam(name = "dateStart", required = false) LocalDate dateStart,
+                                          @RequestParam(name = "dateEnd", required = false) LocalDate dateEnd,
+                                          @RequestParam(name = "number", required = false) String number,
+                                          @RequestParam(name = "people", required = false) List<String> people,
+                                          @RequestParam(name = "kop", required = false) Long kop,
+                                          @RequestParam(name = "userId", required = false) String userId,
+                                          @RequestParam(name = "address", required = false) String address,
+                                          @RequestParam(name = "mark", required = false) String mark,
+                                          @RequestParam(name = "message", required = false) String message,
+                                          @RequestParam(name = "reason", required = false) String reason,
+                                          @RequestParam(name = "status", required = false) CutiStatus status,
+                                          @RequestParam(name = "workUnit", required = false) String workUnit,
+                                          @RequestParam(name = "signedBy", required = false) String signedBy,
+                                          @RequestParam(name = "total", required = false) Integer total,
+                                          @RequestParam(name = "file", required = false) MultipartFile file
+  ) throws MalformedURLException, FileNotFoundException {
+
+    CreateCutiRequest request = new CreateCutiRequest();
+    request.setDateStart(dateStart);
+    request.setDateEnd(dateEnd);
+    request.setNumber(number);
+    request.setPeople(people);
+    request.setKop(kop);
+    request.setUser(userId);
+    request.setAddress(address);
+    request.setMark(mark);
+    request.setStatus(status);
+    request.setWorkUnit(workUnit);
+    request.setMessage(message);
+    request.setReason(reason);
+    request.setSignedBy(signedBy);
+    request.setTotal(total);
+    request.setFile(file);
+
     CutiResponse response = cutiService.create(user, request);
     return WebResponse.<CutiResponse>builder()
             .data(response)
@@ -132,14 +187,56 @@ public class CutiController {
   }
 
   @PatchMapping("/{id}")
-  public WebResponse<CutiResponse> update(User user, @PathVariable("id") String id,
-                                          @RequestBody UpdateCutiRequest request) {
-    System.out.println("get id from controller = " + id);
+  public WebResponse<CutiResponse> update(User user,
+                                          @PathVariable("id") String id,
+                                          @RequestParam(name = "dateStart", required = false) LocalDate dateStart,
+                                          @RequestParam(name = "dateEnd", required = false) LocalDate dateEnd,
+                                          @RequestParam(name = "number", required = false) String number,
+                                          @RequestParam(name = "people", required = false) List<String> people,
+                                          @RequestParam(name = "kop", required = false) Long kop,
+                                          @RequestParam(name = "userId", required = false) String userId,
+                                          @RequestParam(name = "address", required = false) String address,
+                                          @RequestParam(name = "mark", required = false) String mark,
+                                          @RequestParam(name = "message", required = false) String message,
+                                          @RequestParam(name = "status", required = false) CutiStatus status,
+                                          @RequestParam(name = "workUnit", required = false) String workUnit,
+                                          @RequestParam(name = "signedBy", required = false) String signedBy,
+                                          @RequestParam(name = "total", required = false) Integer total,
+                                          @RequestParam(name = "file", required = false) MultipartFile file) {
+
+    UpdateCutiRequest request = new UpdateCutiRequest();
     request.setId(id);
+    request.setDateStart(dateStart);
+    request.setDateEnd(dateEnd);
+    request.setNumber(number);
+    request.setPeople(people);
+    request.setKop(kop);
+    request.setUser(userId);
+    request.setAddress(address);
+    request.setMark(mark);
+    request.setStatus(status);
+    request.setWorkUnit(workUnit);
+    request.setMessage(message);
+    request.setSignedBy(signedBy);
+    request.setTotal(total);
+    request.setFile(file);
+
     CutiResponse response = cutiService.update(user, request);
     return WebResponse.<CutiResponse>builder()
             .data(response)
             .message("Cuti has been updated!")
+            .build();
+  }
+
+  @DeleteMapping("/remove/doc/{id}")
+  public WebResponse<String> deleteDoc(User user,
+                                       @PathVariable("id") String id,
+                                       @RequestBody RemoveFileCutiRequest request) {
+    request.setId(id);
+    System.out.println(request.getPath());
+    String response = cutiService.removeFile(user, request);
+    return WebResponse.<String>builder()
+            .message(response)
             .build();
   }
 
@@ -169,7 +266,6 @@ public class CutiController {
             .message("Success get all current cuti")
             .build();
   }
-
 
   @GetMapping("/{id}")
   public WebResponse<CutiResponse> find(@PathVariable("id") String id) {

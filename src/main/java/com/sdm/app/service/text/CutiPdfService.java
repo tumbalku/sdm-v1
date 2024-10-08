@@ -76,7 +76,7 @@ public class CutiPdfService {
 
     document.close();
 
-    System.out.println("Completed");
+    System.out.println("Completed create cuti detail report ");
   }
 
   private Table coreIzin(User user, Cuti cuti){
@@ -126,16 +126,18 @@ public class CutiPdfService {
     }
 
     userDetail.put("Jabatan", getValue(user.getPosition()));
-    userDetail.put("Unit kerja", getValue(user.getWorkUnit()));
+
+    String workUnit = Objects.nonNull(cuti.getWorkUnit()) && !cuti.getWorkUnit().isBlank() ?
+            cuti.getWorkUnit() : user.getWorkUnit();
+    System.out.println(workUnit);
+    userDetail.put("Unit kerja", getValue(workUnit));
     userDetail.put("Untuk keperluan", getValue(cuti.getReason()));
 
     String dateStart = cuti.getDateStart().format(dateDayFormatter());
     String dateEnd = cuti.getDateEnd().format(dateFormatter());
 
-    long daysBetween = ChronoUnit.DAYS.between(cuti.getDateStart(), cuti.getDateEnd());
-
     userDetail.put("Jangka waktu", String.format("%d (%s) hari terhitung mulai tanggal %s s/d %s",
-        daysBetween, convert(daysBetween), dateStart, dateEnd)
+        cuti.getTotal(), convert(cuti.getTotal()), dateStart, dateEnd)
     );
 
     String address =
@@ -153,6 +155,7 @@ public class CutiPdfService {
             .setBorder(Border.NO_BORDER));
     return core;
   }
+
   private Table core(User user, Cuti cuti){
     Table core = new Table(new float[]{wFull});
 
@@ -204,15 +207,13 @@ public class CutiPdfService {
       userDetail.put("Gologan", checkGol);
     }
 
-    String workUnit = Objects.nonNull(cuti.getWorkUnit()) ? cuti.getWorkUnit() : user.getWorkUnit();
+    String workUnit = Objects.nonNull(cuti.getWorkUnit()) && !cuti.getWorkUnit().isBlank() ?
+            cuti.getWorkUnit() : user.getWorkUnit();
     userDetail.put("Jabatan", getValue(user.getPosition()));
     userDetail.put("Unit Kerja", getValue(workUnit));
 
-    String address =
-            Objects.nonNull(cuti.getAddress()) ?
-                    cuti.getAddress() :
-                    Objects.nonNull(user.getAddress()) ?
-                            user.getAddress().getName() : "-";
+    String address = Objects.nonNull(cuti.getAddress()) && !cuti.getAddress().isBlank() ? cuti.getAddress() :
+                    Objects.nonNull(user.getAddress()) ? user.getAddress().getName() : "-";
 
     userDetail.put("Alamat selama Cuti", address);
 
@@ -222,11 +223,9 @@ public class CutiPdfService {
     String dateStart = cuti.getDateStart().format(dateFormatter());
     String dateEnd = cuti.getDateEnd().format(dateFormatter());
 
-    long daysBetween = calculateDaysBetween(cuti.getDateStart(), cuti.getDateEnd());
-
     core.addCell(setText(
             String.format("Selama %d (%s) hari terhitung mulai tanggal %s s/d %s dengan ketentuan sebagai berikut:",
-                    daysBetween, convert(daysBetween), dateStart, dateEnd), 12
+                    cuti.getTotal(), convert(cuti.getTotal()), dateStart, dateEnd), 12
     ).setPaddingLeft(20f).setPaddingTop(10f).setTextAlignment(TextAlignment.JUSTIFIED));
 
     core.addCell(new Cell().add(smallPoint("a.",
@@ -269,7 +268,7 @@ public class CutiPdfService {
     ttd2.addCell(setText(mark, 12).setBold().setPaddingTop(38f));
     tblTTD.addCell(new Cell().add(ttd2).setBorder(Border.NO_BORDER));
 
-    String formatTddDate = cuti.getCreatedAt().format(dateFormatter());
+    String formatTddDate = cuti.getUpdatedAt().format(dateFormatter());
     String ttdDate = String.format("Kendari, %s", formatTddDate);
 
     Table ttd = new Table(new float[]{percentPerWidth(container, 11f / 12)});

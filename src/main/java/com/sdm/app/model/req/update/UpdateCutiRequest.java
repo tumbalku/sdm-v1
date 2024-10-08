@@ -3,6 +3,7 @@ package com.sdm.app.model.req.update;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sdm.app.enumrated.CutiStatus;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +29,7 @@ public class UpdateCutiRequest {
   private String message;
   private CutiStatus status;
   private String workUnit;
-
+  private Integer total;
   private String signedBy;
+  private MultipartFile file;
 }

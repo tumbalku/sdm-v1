@@ -2,7 +2,8 @@ package com.sdm.app.model.req.create;
 
 import com.sdm.app.enumrated.CutiStatus;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,8 +15,6 @@ import java.util.List;
 @Builder
 public class CreateCutiRequest {
 
-  @JsonIgnore
-  private String id;
   private LocalDate dateStart;
   private LocalDate dateEnd;
   private String number;
@@ -25,7 +24,10 @@ public class CreateCutiRequest {
   private String address;
   private String mark;
   private String message;
+  private String reason;
   private CutiStatus status;
   private String workUnit;
   private String signedBy;
+  private Integer total;
+  private MultipartFile file;
 }
