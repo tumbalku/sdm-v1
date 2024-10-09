@@ -116,7 +116,7 @@ public class CutiController {
             .data(response)
             .build();
   }
-  @PostMapping("/request")
+  @PostMapping(path = "/request", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public WebResponse<CutiResponse> createRequest(User user,
                                                  @RequestParam(name = "dateStart", required = false) LocalDate dateStart,
                                                  @RequestParam(name = "dateEnd", required = false) LocalDate dateEnd,
@@ -143,7 +143,7 @@ public class CutiController {
             .build();
   }
 
-  @PostMapping
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public WebResponse<CutiResponse> create(User user,
                                           @RequestParam(name = "dateStart", required = false) LocalDate dateStart,
                                           @RequestParam(name = "dateEnd", required = false) LocalDate dateEnd,
@@ -186,7 +186,7 @@ public class CutiController {
             .build();
   }
 
-  @PatchMapping("/{id}")
+  @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public WebResponse<CutiResponse> update(User user,
                                           @PathVariable("id") String id,
                                           @RequestParam(name = "dateStart", required = false) LocalDate dateStart,
