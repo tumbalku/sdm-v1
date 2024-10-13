@@ -24,7 +24,8 @@ public class User {
   @Id
   @Column(unique = true, nullable = false)
   private String id;
-
+  @Column(nullable = false, columnDefinition = "int default 0")
+  private Integer priority;
   @Column(unique = true)
   private String nip;
   @Column(nullable = false)
@@ -81,7 +82,7 @@ public class User {
   @JoinTable(name = "user_roles",
           joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
           inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-  private Set<Role> roles = new HashSet<>();;
+  private Set<Role> roles = new HashSet<>();
   // ========== MANY TO MANY RELATION ========== \\
 
   @ManyToOne(fetch = FetchType.EAGER)

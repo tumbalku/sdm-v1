@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 public class SimpleUserResponse {
   private String id;
+  private Integer priority;
   private String nip;
   private String name;
   private String address;

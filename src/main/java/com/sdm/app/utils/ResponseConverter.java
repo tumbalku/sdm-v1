@@ -5,16 +5,26 @@ import com.sdm.app.model.res.*;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class ResponseConverter {
 
-  public static UserResponse userToResponse(User user){
+  public static PinUserResponse pinUserToResponse(User user) {
+    return PinUserResponse.builder()
+            .position(user.getPosition())
+            .workUnit(user.getWorkUnit())
+            .avatar(user.getAvatar())
+            .name(user.getName())
+            .id(user.getId())
+            .build();
+  }
+
+  public static UserResponse userToResponse(User user) {
     UserResponse response = UserResponse.builder()
             .id(user.getId())
+            .priority(user.getPriority())
             .nip(user.getNip())
             .name(user.getName())
             .email(user.getEmail())
@@ -33,11 +43,11 @@ public class ResponseConverter {
             .twitter(user.getTwitter())
             .build();
 
-    if(Objects.nonNull(user.getAddress())){
+    if (Objects.nonNull(user.getAddress())) {
       response.setAddress(user.getAddress().getName());
     }
 
-    if(Objects.nonNull(user.getRoles()) && user.getRoles().size() != 0){
+    if (Objects.nonNull(user.getRoles()) && user.getRoles().size() != 0) {
       response.setRoles(user.getRoles().stream()
               .map(Role::getName)
               .collect(Collectors.toList()));
@@ -46,7 +56,7 @@ public class ResponseConverter {
     return response;
   }
 
-  public static UserLite userToLiteResponse(User user){
+  public static UserLite userToLiteResponse(User user) {
     return UserLite.builder()
             .id(user.getId())
             .nip(user.getNip())
@@ -57,9 +67,10 @@ public class ResponseConverter {
             .build();
   }
 
-  public static SimpleUserResponse userToSimpleResponse(User user){
+  public static SimpleUserResponse userToSimpleResponse(User user) {
     SimpleUserResponse response = SimpleUserResponse.builder()
             .id(user.getId())
+            .priority(user.getPriority())
             .nip(user.getNip())
             .name(user.getName())
             .email(user.getEmail())
@@ -76,7 +87,7 @@ public class ResponseConverter {
             .twitter(user.getTwitter())
             .build();
 
-    if(Objects.nonNull(user.getRoles())){
+    if (Objects.nonNull(user.getRoles())) {
       response.setRoles(user.getRoles().stream()
               .map(Role::getName)
               .collect(Collectors.toList()));
@@ -85,7 +96,7 @@ public class ResponseConverter {
     return response;
   }
 
-  public static LetterResponse letterToResponse(Letter letter){
+  public static LetterResponse letterToResponse(Letter letter) {
     return LetterResponse.builder()
             .id(letter.getId())
             .size(letter.getSize())
@@ -101,14 +112,15 @@ public class ResponseConverter {
             .build();
   }
 
-  public static SipReportResponse sipReportToResponse(SipReport report){
+  public static SipReportResponse sipReportToResponse(SipReport report) {
     return SipReportResponse.builder()
             .sentDate(report.getSentDate())
             .status(report.getStatus())
             .id(report.getId())
             .build();
   }
-  public static SipResponse sipToResponse(Sip sip){
+
+  public static SipResponse sipToResponse(Sip sip) {
     SipResponse response = SipResponse.builder()
             .id(sip.getId())
             .size(sip.getSize())
@@ -122,20 +134,21 @@ public class ResponseConverter {
             .user(userToSimpleResponse(sip.getUser()))
             .build();
 
-    if(Objects.nonNull(sip.getReports()) && sip.getReports().size() != 0){
+    if (Objects.nonNull(sip.getReports()) && sip.getReports().size() != 0) {
       response.setReports(sip.getReports().stream().map(ResponseConverter::sipReportToResponse).collect(Collectors.toList()));
     }
 
     return response;
   }
 
-  public static AddressResponse addressToResponse(Address address){
+  public static AddressResponse addressToResponse(Address address) {
     return AddressResponse.builder()
             .id(address.getId())
             .name(address.getName())
             .build();
   }
-  public static KopResponse kopToResponse(Kop kop){
+
+  public static KopResponse kopToResponse(Kop kop) {
 
     return KopResponse.builder()
             .id(kop.getId())
@@ -147,7 +160,7 @@ public class ResponseConverter {
             .build();
   }
 
-  public static RoleResponse roleToResponse(Role role){
+  public static RoleResponse roleToResponse(Role role) {
     RoleResponse response = new RoleResponse();
     response.setId(role.getId());
     response.setName(role.getName());
@@ -176,7 +189,7 @@ public class ResponseConverter {
             .updatedAt(cuti.getUpdatedAt())
             .build();
 
-    if(Objects.nonNull(cuti.getPeople())){
+    if (Objects.nonNull(cuti.getPeople())) {
       response.setPeople(cuti.getPeople().stream()
               .map(People::getName)
               .collect(Collectors.toList()));
@@ -184,7 +197,7 @@ public class ResponseConverter {
     return response;
   }
 
-  public static PagingResponse getPagingResponse(Page<?> page){
+  public static PagingResponse getPagingResponse(Page<?> page) {
     int pageNumber = page.getNumber() + 1;
     return PagingResponse.builder()
             .page(pageNumber) // current page
@@ -194,7 +207,7 @@ public class ResponseConverter {
             .build();
   }
 
-  public static PostResponse postToResponse(Post post){
+  public static PostResponse postToResponse(Post post) {
     return PostResponse.builder()
             .id(post.getId())
             .title(post.getTitle())
@@ -208,14 +221,28 @@ public class ResponseConverter {
   }
 
   public static SipLiteResponse sipLiteToResponse(Sip sip) {
-    SipLiteResponse response =  SipLiteResponse.builder()
+    SipLiteResponse response = SipLiteResponse.builder()
             .num(sip.getNum())
             .expiredAt(sip.getExpiredAt())
             .user(userToLiteResponse(sip.getUser()))
             .build();
-    if(Objects.nonNull(sip.getReports()) && sip.getReports().size() != 0){
+    if (Objects.nonNull(sip.getReports()) && sip.getReports().size() != 0) {
       response.setReports(sip.getReports().stream().map(ResponseConverter::sipReportToResponse).collect(Collectors.toList()));
     }
     return response;
+  }
+
+  public static DocumentResponse documentToResponse(Document document) {
+    return DocumentResponse.builder()
+            .id(document.getId())
+            .size(document.getSize())
+            .name(document.getName())
+            .path(document.getPath())
+            .type(document.getType())
+            .priority(document.getPriority())
+            .updatedAt(document.getUpdatedAt())
+            .uploadedAt(document.getUploadedAt())
+            .description(document.getDescription())
+            .build();
   }
 }

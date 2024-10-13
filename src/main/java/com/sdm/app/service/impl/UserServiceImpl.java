@@ -6,9 +6,12 @@ import com.sdm.app.entity.User;
 import com.sdm.app.enumrated.Gender;
 import com.sdm.app.enumrated.UserStatus;
 import com.sdm.app.model.req.create.CreateUserRequest;
+import com.sdm.app.model.req.search.UserSearchPin;
 import com.sdm.app.model.req.search.UserSearchRequest;
+import com.sdm.app.model.req.update.PinPriorityRequest;
 import com.sdm.app.model.req.update.UpdatePasswordRequest;
 import com.sdm.app.model.req.update.UpdateUserRequest;
+import com.sdm.app.model.res.PinUserResponse;
 import com.sdm.app.model.res.SimpleUserResponse;
 import com.sdm.app.model.res.UserResponse;
 import com.sdm.app.repository.RoleRepository;
@@ -43,9 +46,56 @@ public class UserServiceImpl implements UserService {
   private final FileServiceImpl fileService;
   private final AddressServiceImpl addressService;
 
+  @Transactional
+  public UserResponse pinPriority(User admin, PinPriorityRequest request) {
+    GeneralHelper.isAdmin(admin);
+    User user = getUser(request.getId());
+    user.setPriority(request.getPriority());
+    userRepository.save(user);
+    return ResponseConverter.userToResponse(user);
+  }
 
   @Transactional(readOnly = true)
-  public Page<SimpleUserResponse> searchUsers(User user, UserSearchRequest request){
+  public Page<PinUserResponse> searchPin(UserSearchPin request) {
+
+    int page = request.getPage() - 1;
+
+    Specification<User> specification = (root, query, builder) -> {
+      List<Predicate> predicates = new ArrayList<>();
+
+      predicates.add(builder.equal(root.get("priority"), 1));
+
+      if (Objects.nonNull(request.getWorkUnit())) {
+        predicates.add(builder.equal(root.get("workUnit"), request.getWorkUnit()));
+      }
+
+      Join<User, Role> rolesJoin = root.join("roles");
+      if (request.getRole().equalsIgnoreCase("ADMIN")) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You try to hack me?");
+      }
+      predicates.add(builder.equal(rolesJoin.get("name"), request.getRole()));
+
+      return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
+    };
+
+    Sort.Direction sortDirection = "latest".equalsIgnoreCase(request.getDateSortBy()) ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+    Sort sort = Sort.by(
+            Sort.Order.desc("priority"),
+            new Sort.Order(sortDirection, "updatedAt")
+    );
+
+    Pageable pageable = PageRequest.of(page, request.getSize(), sort);
+    Page<User> users = userRepository.findAll(specification, pageable);
+    List<PinUserResponse> userResponse = users.getContent().stream()
+            .map(ResponseConverter::pinUserToResponse)
+            .collect(Collectors.toList());
+
+    return new PageImpl<>(userResponse, pageable, users.getTotalElements());
+  }
+
+  @Transactional(readOnly = true)
+  public Page<SimpleUserResponse> searchUsers(User user, UserSearchRequest request) {
 
     GeneralHelper.isAdmin(user);
 
@@ -54,13 +104,13 @@ public class UserServiceImpl implements UserService {
     Specification<User> specification = (root, query, builder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
-      if(Objects.nonNull(request.getIdentity())){
+      if (Objects.nonNull(request.getIdentity())) {
         predicates.add(builder.or(
                 builder.equal(root.get("nip"), request.getIdentity()),
                 builder.like(root.get("name"), "%" + request.getIdentity() + "%")));
       }
 
-      if(Objects.nonNull(request.getStatus())) {
+      if (Objects.nonNull(request.getStatus())) {
         predicates.add(builder.equal(root.get("status"), UserStatus.valueOf(request.getStatus())));
       }
 
@@ -113,7 +163,7 @@ public class UserServiceImpl implements UserService {
     user.setWorkUnit(request.getWorkUnit());
     user.setStatus(UserStatus.ACTIVE);
 
-    if(request.getRoles().size() < 1){
+    if (request.getRoles().size() < 1) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please choose at least one Role!");
     }
 
@@ -170,7 +220,7 @@ public class UserServiceImpl implements UserService {
     Optional.ofNullable(request.getGender()).filter(StringUtils::hasText)
             .ifPresent(gender -> user.setGender(Gender.valueOf(request.getGender())));
 
-    if(Objects.nonNull(request.getRoles()) && request.getRoles().size() != 0) {
+    if (Objects.nonNull(request.getRoles()) && request.getRoles().size() != 0) {
       user.getRoles().clear();
       for (String role : request.getRoles()) {
         Role exsistingRole = roleRepository.findByName(role)
@@ -188,10 +238,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Transactional
-  public SimpleUserResponse updatePassword(User current, UpdatePasswordRequest request){
+  public SimpleUserResponse updatePassword(User current, UpdatePasswordRequest request) {
 
     GeneralHelper.validate(request);
-    if(!request.getNewPassword().equals(request.getConfirmPassword())){
+    if (!request.getNewPassword().equals(request.getConfirmPassword())) {
       throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Double check the new password and the confirm password!");
     }
     current.setUpdatedAt(LocalDateTime.now());
@@ -201,7 +251,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Transactional
-  public SimpleUserResponse resetPassword(User admin, String id){
+  public SimpleUserResponse resetPassword(User admin, String id) {
     GeneralHelper.isAdmin(admin);
 
     User user = getUser(id);
@@ -213,7 +263,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Transactional
-  public SimpleUserResponse updateUserInfo(User current, UpdateUserRequest request){
+  public SimpleUserResponse updateUserInfo(User current, UpdateUserRequest request) {
 
     GeneralHelper.validate(request);
     if (!StringUtils.hasText(request.getUsername()) || !Objects.nonNull(request.getUsername())) {
@@ -237,10 +287,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Transactional
-  public SimpleUserResponse delete(User admin, String id){
+  public SimpleUserResponse delete(User admin, String id) {
     GeneralHelper.isAdmin(admin);
     User user = getUser(id);
-    if(Objects.nonNull(user.getAvatar())){
+    if (Objects.nonNull(user.getAvatar())) {
       fileService.removePrevFile(user.getAvatar());
     }
     userRepository.delete(user);
@@ -248,12 +298,12 @@ public class UserServiceImpl implements UserService {
   }
 
   @Transactional(readOnly = true)
-  public UserResponse getById(String id){
+  public UserResponse getById(String id) {
     User user = getUser(id);
     return ResponseConverter.userToResponse(user);
   }
 
-  public User getUser(String id){
+  public User getUser(String id) {
     return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
   }
 

@@ -5,7 +5,7 @@ import com.sdm.app.entity.Post;
 import com.sdm.app.entity.User;
 import com.sdm.app.model.req.create.CreatePostRequest;
 import com.sdm.app.model.req.search.SearchPostRequest;
-import com.sdm.app.model.req.update.PostPriorityRequest;
+import com.sdm.app.model.req.update.PinPriorityRequest;
 import com.sdm.app.model.res.PostResponse;
 import com.sdm.app.repository.PostRepository;
 import com.sdm.app.utils.GeneralHelper;
@@ -32,7 +32,7 @@ public class PostServiceImpl {
 
 
   @Transactional
-  public PostResponse pinPriority(User admin, PostPriorityRequest request){
+  public PostResponse pinPriority(User admin, PinPriorityRequest request) {
     GeneralHelper.isAdmin(admin);
     Post post = getPost(request.getId());
     post.setPriority(request.getPriority());
@@ -41,19 +41,19 @@ public class PostServiceImpl {
   }
 
   @Transactional(readOnly = true)
-  private Post getPost(String id){
+  private Post getPost(String id) {
     return postRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found!"));
   }
 
   @Transactional(readOnly = true)
-  public PostResponse findPost(String id){
+  public PostResponse findPost(String id) {
     Post post = getPost(id);
     return ResponseConverter.postToResponse(post);
   }
 
   @Transactional
-  public PostResponse delete(User admin, String id){
+  public PostResponse delete(User admin, String id) {
     GeneralHelper.isAdmin(admin);
     Post post = getPost(id);
     postRepository.delete(post);
@@ -61,10 +61,10 @@ public class PostServiceImpl {
   }
 
   @Transactional
-  public PostResponse update(User admin, CreatePostRequest request){
+  public PostResponse update(User admin, CreatePostRequest request) {
     GeneralHelper.isAdmin(admin);
     Post post = getPost(request.getId());
-    if(!post.getUser().getId().equals(admin.getId())){
+    if (!post.getUser().getId().equals(admin.getId())) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Your account not allow to modify this post");
     }
     Optional.ofNullable(request.getTitle()).filter(StringUtils::hasText).ifPresent(post::setTitle);
@@ -77,7 +77,7 @@ public class PostServiceImpl {
   }
 
   @Transactional
-  public PostResponse create(User admin, CreatePostRequest request){
+  public PostResponse create(User admin, CreatePostRequest request) {
     GeneralHelper.isAdmin(admin);
     Post post = new Post();
     post.setId(UUID.randomUUID().toString());
@@ -93,14 +93,14 @@ public class PostServiceImpl {
   }
 
   @Transactional(readOnly = true)
-  public Page<PostResponse> searchPosts(SearchPostRequest request){
+  public Page<PostResponse> searchPosts(SearchPostRequest request) {
 
     int page = request.getPage() - 1;
 
     Specification<Post> specification = (root, query, builder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
-      if(Objects.nonNull(request.getContent())){
+      if (Objects.nonNull(request.getContent())) {
         predicates.add(builder.or(
                 builder.like(root.get("title"), "%" + request.getContent() + "%"),
                 builder.like(root.get("content"), "%" + request.getContent() + "%")));

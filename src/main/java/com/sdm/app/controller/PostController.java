@@ -3,7 +3,7 @@ package com.sdm.app.controller;
 import com.sdm.app.entity.User;
 import com.sdm.app.model.req.create.CreatePostRequest;
 import com.sdm.app.model.req.search.SearchPostRequest;
-import com.sdm.app.model.req.update.PostPriorityRequest;
+import com.sdm.app.model.req.update.PinPriorityRequest;
 import com.sdm.app.model.res.PostResponse;
 import com.sdm.app.model.res.WebResponse;
 import com.sdm.app.model.res.WebResponseWithPaging;
@@ -27,7 +27,7 @@ public class PostController {
                                                           @RequestParam(name = "priority", required = false) Integer priority,
                                                           @RequestParam(name = "dateSortBy", required = false, defaultValue = "latest") String dateSortBy,
                                                           @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-                                                          @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
+                                                          @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
 
     SearchPostRequest request = SearchPostRequest.builder()
             .priority(priority)
@@ -47,7 +47,7 @@ public class PostController {
   }
 
   @PostMapping
-  public WebResponse<PostResponse> create(User user, @RequestBody CreatePostRequest request){
+  public WebResponse<PostResponse> create(User user, @RequestBody CreatePostRequest request) {
 
     PostResponse response = postService.create(user, request);
 
@@ -60,17 +60,18 @@ public class PostController {
   @PatchMapping("priority/{id}")
   public WebResponse<PostResponse> pinPriority(User user,
                                                @PathVariable("id") String id,
-                                               @RequestBody PostPriorityRequest request){
+                                               @RequestBody PinPriorityRequest request) {
     request.setId(id);
     PostResponse response = postService.pinPriority(user, request);
 
     return WebResponse.<PostResponse>builder()
             .data(response)
-            .message("Success update")
+            .message("Success pin")
             .build();
   }
+
   @PatchMapping("/{id}")
-  public WebResponse<PostResponse> update(User user, @PathVariable("id") String id, @RequestBody CreatePostRequest request){
+  public WebResponse<PostResponse> update(User user, @PathVariable("id") String id, @RequestBody CreatePostRequest request) {
     request.setId(id);
     PostResponse response = postService.update(user, request);
 
@@ -81,7 +82,7 @@ public class PostController {
   }
 
   @GetMapping("/{id}")
-  public WebResponse<PostResponse> find(@PathVariable("id") String id){
+  public WebResponse<PostResponse> find(@PathVariable("id") String id) {
 
     PostResponse response = postService.findPost(id);
 
@@ -92,7 +93,7 @@ public class PostController {
   }
 
   @DeleteMapping("/{id}")
-  public WebResponse<PostResponse> delete(User user, @PathVariable("id") String id){
+  public WebResponse<PostResponse> delete(User user, @PathVariable("id") String id) {
 
     PostResponse response = postService.delete(user, id);
 

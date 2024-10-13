@@ -2,10 +2,9 @@ package com.sdm.app.model.res;
 
 import com.sdm.app.enumrated.Gender;
 import com.sdm.app.enumrated.UserStatus;
+import lombok.*;
 
 import java.util.List;
-
-import lombok.*;
 
 
 @Getter
@@ -16,6 +15,7 @@ import lombok.*;
 public class UserResponse {
 
   private String id;
+  private Integer priority;
   private String nip;
   private String name;
   private String email;
