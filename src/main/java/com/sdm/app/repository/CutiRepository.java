@@ -14,19 +14,31 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface CutiRepository extends JpaRepository<Cuti, String>, JpaSpecificationExecutor<Cuti>  {
+public interface CutiRepository extends JpaRepository<Cuti, String>, JpaSpecificationExecutor<Cuti> {
 
   List<Cuti> findByDateEndBefore(LocalDate date);
+
   List<Cuti> findByUser(User user);
 
-//  @Query("SELECT new com.sdm.app.model.res.CutiTypeCount(c.kop.type, COUNT(c)) " +
+  //  @Query("SELECT new com.sdm.app.model.res.CutiTypeCount(c.kop.type, COUNT(c)) " +
 //          "FROM Cuti c " +
 //          "GROUP BY c.kop.type")
-@Query("SELECT new com.sdm.app.model.res.CutiTypeCount(c.kop.type, COUNT(c)) " +
-        "FROM Cuti c " +
-        "WHERE c.status IN :statuses " +
-        "GROUP BY c.kop.type")
-List<CutiTypeCount> countByType(@Param("statuses") List<CutiStatus> statuses);
+  @Query("SELECT new com.sdm.app.model.res.CutiTypeCount(c.kop.type, COUNT(c)) " +
+          "FROM Cuti c " +
+          "WHERE c.status IN :statuses " +
+          "GROUP BY c.kop.type")
+  List<CutiTypeCount> countByType(@Param("statuses") List<CutiStatus> statuses);
+
+  @Query("SELECT new com.sdm.app.model.res.CutiTypeCount(c.kop.type, COUNT(c)) " +
+          "FROM Cuti c " +
+          "WHERE c.status = :status " +
+          "GROUP BY c.kop.type")
+  List<CutiTypeCount> countByType(@Param("status") CutiStatus status);
+
+  @Query("SELECT SUM(COUNT(c)) FROM Cuti c " +
+          "WHERE c.status = :status " +
+          "GROUP BY c.kop.type")
+  long countByStatus(@Param("status") CutiStatus status);
 
   @Query("SELECT new com.sdm.app.model.res.CutiTypeCount(c.kop.type, COUNT(c)) " +
           "FROM Cuti c " +
@@ -34,9 +46,11 @@ List<CutiTypeCount> countByType(@Param("statuses") List<CutiStatus> statuses);
   List<CutiTypeCount> countByAllTypes();
 
   List<Cuti> findByUserAndDateEndAfter(User user, LocalDate currentDate);
+
   List<Cuti> findByUserAndStatus(User user, CutiStatus status);
 
   List<Cuti> findByUserAndDateEndAfterAndStatus(User user, LocalDate currentDate, CutiStatus status);
+
   List<Cuti> findByUserAndDateEndAfterAndStatusNot(User user, LocalDate currentDate, CutiStatus status);
 
   @Query("SELECT c FROM Cuti c WHERE YEAR(c.createdAt) = :year AND c.status = :status")

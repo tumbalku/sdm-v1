@@ -39,12 +39,21 @@ public class UserController {
             .build();
   }
 
+  @GetMapping("public/view/{id}")
+  public WebResponse<PinUserResponse> findPinUser(@PathVariable("id") String id) {
+    PinUserResponse response = userService.getPinUser(id);
+    return WebResponse.<PinUserResponse>builder()
+            .data(response)
+            .message("User founded!")
+            .build();
+  }
+
   @GetMapping(path = "pin", produces = MediaType.APPLICATION_JSON_VALUE)
-  public WebResponseWithPaging<List<PinUserResponse>> findPin(@RequestParam(name = "dateSortBy", required = false, defaultValue = "latest") String dateSortBy,
-                                                              @RequestParam(name = "role", required = false) String role,
-                                                              @RequestParam(name = "workUnit", required = false) String workUnit,
-                                                              @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-                                                              @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
+  public WebResponseWithPaging<List<PinUserResponse>> findPinUsers(@RequestParam(name = "dateSortBy", required = false, defaultValue = "latest") String dateSortBy,
+                                                                   @RequestParam(name = "role", required = false) String role,
+                                                                   @RequestParam(name = "workUnit", required = false) String workUnit,
+                                                                   @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+                                                                   @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
 
     UserSearchPin request = new UserSearchPin();
     request.setDateSortBy(dateSortBy);

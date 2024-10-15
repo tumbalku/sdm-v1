@@ -36,14 +36,24 @@ public class SipServiceImpl {
   private final UserServiceImpl userService;
 
   @Transactional(readOnly = true)
-  public Page<SipResponse> searchSip(SearchSipRequest request){
+  public long countAll() {
+    return sipRepository.count();
+  }
+
+  @Transactional(readOnly = true)
+  public long countActiveSip() {
+    return sipRepository.countActiveSips();
+  }
+
+  @Transactional(readOnly = true)
+  public Page<SipResponse> searchSip(SearchSipRequest request) {
 
     int page = request.getPage() - 1;
 
     Specification<Sip> specification = (root, query, builder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
-      if(Objects.nonNull(request.getIdentity())){
+      if (Objects.nonNull(request.getIdentity())) {
         predicates.add(builder.or(
                 builder.equal(root.get("num"), request.getIdentity()),
                 builder.like(root.get("name"), "%" + request.getIdentity() + "%")));
@@ -62,12 +72,12 @@ public class SipServiceImpl {
   }
 
   @Transactional(readOnly = true)
-  public List<SipResponse> findCurrentSips(User user){
+  public List<SipResponse> findCurrentSips(User user) {
     return sipRepository.findByUser(user).stream().map(ResponseConverter::sipToResponse).collect(Collectors.toList());
   }
 
   @Transactional
-  public SipResponse update(User admin, UpdateSipRequest request){
+  public SipResponse update(User admin, UpdateSipRequest request) {
     GeneralHelper.isAdmin(admin);
     Sip sip = getSip(request.getId());
     Optional.ofNullable(request.getNum()).filter(StringUtils::hasText).ifPresent(sip::setNum);
@@ -78,7 +88,7 @@ public class SipServiceImpl {
   }
 
   @Transactional
-  public SipResponse create(User admin, CreateSipRequest request){
+  public SipResponse create(User admin, CreateSipRequest request) {
 
 
     System.out.println();
@@ -94,7 +104,7 @@ public class SipServiceImpl {
     String name = user.getName() + " - SIP - " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"));
     sip.setName(name);
 
-    if(Objects.nonNull(request.getFile())){
+    if (Objects.nonNull(request.getFile())) {
       FileResponse file = fileService.saveFile(request.getFile());
       sip.setFileType(file.getContentType());
       sip.setPath(file.getURL());
@@ -107,10 +117,10 @@ public class SipServiceImpl {
   }
 
   @Transactional
-  public SipResponse delete(User admin, String id){
+  public SipResponse delete(User admin, String id) {
     GeneralHelper.isAdmin(admin);
     Sip sip = getSip(id);
-    if(Objects.nonNull(sip.getPath())){
+    if (Objects.nonNull(sip.getPath())) {
       fileService.removePrevFile(sip.getPath());
     }
     sipRepository.delete(sip);
@@ -118,7 +128,7 @@ public class SipServiceImpl {
   }
 
   @Transactional
-  public SipDocResponse getSipDoc(String id){
+  public SipDocResponse getSipDoc(String id) {
     Sip sip = getSip(id);
     SipDocResponse response = new SipDocResponse();
     response.setFilename(sip.getName());
@@ -130,12 +140,12 @@ public class SipServiceImpl {
   }
 
   @Transactional(readOnly = true)
-  public SipResponse getById(String id){
+  public SipResponse getById(String id) {
     Sip sip = getSip(id);
     return ResponseConverter.sipToResponse(sip);
   }
 
-  public Sip getSip(String id){
+  public Sip getSip(String id) {
     return sipRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sip not found!"));
   }

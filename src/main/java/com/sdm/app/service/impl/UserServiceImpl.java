@@ -56,6 +56,12 @@ public class UserServiceImpl implements UserService {
   }
 
   @Transactional(readOnly = true)
+  public PinUserResponse getPinUser(String id) {
+    User user = getUser(id);
+    return ResponseConverter.pinUserToResponse(user);
+  }
+
+  @Transactional(readOnly = true)
   public Page<PinUserResponse> searchPin(UserSearchPin request) {
 
     int page = request.getPage() - 1;

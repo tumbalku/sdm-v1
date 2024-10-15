@@ -1,6 +1,9 @@
 package com.sdm.app.service.impl;
 
-import com.sdm.app.entity.*;
+import com.sdm.app.entity.Cuti;
+import com.sdm.app.entity.Kop;
+import com.sdm.app.entity.People;
+import com.sdm.app.entity.User;
 import com.sdm.app.enumrated.CutiStatus;
 import com.sdm.app.enumrated.KopType;
 import com.sdm.app.model.req.RemoveFileCutiRequest;
@@ -37,12 +40,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,16 +67,17 @@ public class CutiServiceImpl {
     pdfCutiReport.makeCutiReports(year);
 
     Path filePath = Path.of("temp-pdf/cuti-reports.pdf");
-    if(!Files.exists(filePath)) {
+    if (!Files.exists(filePath)) {
       throw new FileNotFoundException("file was not found on the server");
     }
 
     return new UrlResource(filePath.toUri());
   }
+
   public Resource getBlanko(User user) throws IOException {
     kartuKontrolPdf.makeMyCutiReport(user);
     Path filePath = Path.of("temp-pdf/kartu-kontrol.pdf");
-    if(!Files.exists(filePath)) {
+    if (!Files.exists(filePath)) {
       throw new FileNotFoundException("file was not found on the server");
     }
 
@@ -88,7 +90,7 @@ public class CutiServiceImpl {
     cutiPdfService.makeAnCutiReport(cuti);
 
     Path filePath = Path.of("temp-pdf/output.pdf");
-    if(!Files.exists(filePath)) {
+    if (!Files.exists(filePath)) {
       throw new FileNotFoundException("file was not found on the server");
     }
 
@@ -96,12 +98,23 @@ public class CutiServiceImpl {
   }
 
   @Transactional(readOnly = true)
-  public byte[] getCutiDoc(String id){
+  public long activeCutiCount() {
+    return cutiRepository.countByStatus(CutiStatus.APPROVE);
+  }
+
+  @Transactional(readOnly = true)
+  public long countCutiAll() {
+    return cutiRepository.count();
+  }
+
+  @Transactional(readOnly = true)
+  public byte[] getCutiDoc(String id) {
     Cuti cuti = getCuti(id);
     return fileService.getFile(cuti.getDocument());
   }
+
   @Transactional
-  public CutiResponse makeDecisionCuti(User admin, DecitionCutiRequest request){
+  public CutiResponse makeDecisionCuti(User admin, DecitionCutiRequest request) {
     GeneralHelper.isAdmin(admin);
 
     Cuti cuti = getCuti(request.getId());
@@ -109,19 +122,19 @@ public class CutiServiceImpl {
     cuti.setMessage(request.getMessage());
     cuti.setUpdatedAt(LocalDateTime.now());
 
-    if(!request.getStatus().equals(CutiStatus.REJECT)){
+    if (!request.getStatus().equals(CutiStatus.REJECT)) {
       cuti.setTotal(request.getTotal());
       Optional.ofNullable(request.getNumber()).ifPresent(cuti::setNumber);
       Optional.ofNullable(request.getSignedBy()).filter(StringUtils::hasText).ifPresent(cuti::setSignedBy);
       Optional.ofNullable(request.getMark()).filter(StringUtils::hasText).ifPresent(cuti::setMark);
 
-      if(Objects.nonNull(request.getPeople()) && request.getPeople().size() != 0) {
+      if (Objects.nonNull(request.getPeople()) && request.getPeople().size() != 0) {
         cuti.getPeople().clear();
         for (String people : request.getPeople()) {
           People exsistingPeople = peopleRepository.findByNameIgnoreCase(people).orElse(null);
-          if(Objects.nonNull(exsistingPeople)){
+          if (Objects.nonNull(exsistingPeople)) {
             cuti.getPeople().add(exsistingPeople);
-          }else{
+          } else {
             People newPep = new People();
             newPep.setName(people);
             peopleRepository.save(newPep);
@@ -136,7 +149,7 @@ public class CutiServiceImpl {
   }
 
   @Transactional
-  public CutiResponse userCreateCuti(User user, UserCreateCutiRequest request){
+  public CutiResponse userCreateCuti(User user, UserCreateCutiRequest request) {
     Cuti cuti = new Cuti();
 
     List<Cuti> cutiListWithStatusApprove = cutiRepository.findByUserAndDateEndAfterAndStatusNot(user, LocalDate.now(), CutiStatus.REJECT);
@@ -167,7 +180,7 @@ public class CutiServiceImpl {
     cuti.setRomawi(kop.getRomawi());
     cuti.setYear(kop.getYear());
 
-    if(Objects.nonNull(request.getFile())){
+    if (Objects.nonNull(request.getFile())) {
       FileResponse file = fileService.saveFile(request.getFile());
       cuti.setDocument(file.getURL());
     }
@@ -216,7 +229,7 @@ public class CutiServiceImpl {
   }
 
   @Transactional(readOnly = true)
-  public DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> search(SearchCutiRequest request){
+  public DataReportResponse<Page<CutiResponse>, Map<KopType, Long>> search(SearchCutiRequest request) {
     int page = request.getPage() - 1;
 
     Specification<Cuti> specification = (root, query, builder) -> {
@@ -227,7 +240,7 @@ public class CutiServiceImpl {
         predicates.add(builder.like(userJoin.get("name"), "%" + request.getName() + "%"));
       }
 
-      if(Objects.nonNull(request.getType())){
+      if (Objects.nonNull(request.getType())) {
         predicates.add(builder.equal(root.get("kop").get("type"), KopType.valueOf(request.getType())));
       }
 
@@ -268,7 +281,7 @@ public class CutiServiceImpl {
   }
 
   @Transactional
-  public CutiResponse create(User admin, CreateCutiRequest request){
+  public CutiResponse create(User admin, CreateCutiRequest request) {
     GeneralHelper.isAdmin(admin);
 
     Cuti cuti = new Cuti();
@@ -297,19 +310,19 @@ public class CutiServiceImpl {
     cuti.setMessage(request.getMessage());
     cuti.setReason(request.getReason());
 
-    if(Objects.nonNull(request.getFile())){
-      if(request.getFile().getSize() != 0){
+    if (Objects.nonNull(request.getFile())) {
+      if (request.getFile().getSize() != 0) {
         FileResponse file = fileService.saveFile(request.getFile());
         cuti.setDocument(file.getURL());
       }
     }
 
-    if(Objects.nonNull(request.getPeople()) && request.getPeople().size() != 0){
+    if (Objects.nonNull(request.getPeople()) && request.getPeople().size() != 0) {
       for (String people : request.getPeople()) {
         People exsistingPeople = peopleRepository.findByNameIgnoreCase(people).orElse(null);
-        if(Objects.nonNull(exsistingPeople)){
+        if (Objects.nonNull(exsistingPeople)) {
           cuti.getPeople().add(exsistingPeople);
-        }else{
+        } else {
           People newPep = new People();
           newPep.setName(people);
           peopleRepository.save(newPep);
@@ -328,7 +341,7 @@ public class CutiServiceImpl {
   }
 
   @Transactional
-  public String removeFile(User admin, RemoveFileCutiRequest request){
+  public String removeFile(User admin, RemoveFileCutiRequest request) {
     GeneralHelper.isAdmin(admin);
     Cuti cuti = getCuti(request.getId());
     cuti.setDocument(null);
@@ -336,8 +349,9 @@ public class CutiServiceImpl {
     cutiRepository.save(cuti);
     return "Document successfuly removed";
   }
+
   @Transactional
-  public CutiResponse update(User admin, UpdateCutiRequest request){
+  public CutiResponse update(User admin, UpdateCutiRequest request) {
     GeneralHelper.isAdmin(admin);
     Cuti cuti = getCuti(request.getId());
     Optional.ofNullable(request.getStatus()).ifPresent(cuti::setStatus);
@@ -347,8 +361,8 @@ public class CutiServiceImpl {
     Optional.ofNullable(request.getDateStart()).ifPresent(cuti::setDateStart);
     Optional.ofNullable(request.getAddress()).filter(StringUtils::hasText).ifPresent(cuti::setAddress);
 
-    if(Objects.nonNull(request.getFile())){
-      if(request.getFile().getSize() != 0){
+    if (Objects.nonNull(request.getFile())) {
+      if (request.getFile().getSize() != 0) {
         FileResponse file = fileService.saveFile(request.getFile());
         cuti.setDocument(file.getURL());
       }
@@ -370,18 +384,18 @@ public class CutiServiceImpl {
 
     cuti.setWorkUnit(workUnit);
 
-    if(!request.getStatus().equals(CutiStatus.REJECT)){
+    if (!request.getStatus().equals(CutiStatus.REJECT)) {
       Optional.ofNullable(request.getNumber()).ifPresent(cuti::setNumber);
       Optional.ofNullable(request.getSignedBy()).filter(StringUtils::hasText).ifPresent(cuti::setSignedBy);
       Optional.ofNullable(request.getMark()).filter(StringUtils::hasText).ifPresent(cuti::setMark);
 
-      if(Objects.nonNull(request.getPeople()) && request.getPeople().size() != 0) {
+      if (Objects.nonNull(request.getPeople()) && request.getPeople().size() != 0) {
         cuti.getPeople().clear();
         for (String people : request.getPeople()) {
           People exsistingPeople = peopleRepository.findByNameIgnoreCase(people).orElse(null);
-          if(Objects.nonNull(exsistingPeople)){
+          if (Objects.nonNull(exsistingPeople)) {
             cuti.getPeople().add(exsistingPeople);
-          }else{
+          } else {
             People newPep = new People();
             newPep.setName(people);
             peopleRepository.save(newPep);
@@ -389,7 +403,7 @@ public class CutiServiceImpl {
           }
         }
       }
-    }else{
+    } else {
       cuti.setNumber(null);
       cuti.setSignedBy(null);
       cuti.setMark(null);
@@ -401,10 +415,10 @@ public class CutiServiceImpl {
   }
 
   @Transactional
-  public CutiResponse deleteById(User admin, String id){
+  public CutiResponse deleteById(User admin, String id) {
     GeneralHelper.isAdmin(admin);
     Cuti cuti = getCuti(id);
-    if(Objects.nonNull(cuti.getDocument()) && !cuti.getDocument().isBlank()){
+    if (Objects.nonNull(cuti.getDocument()) && !cuti.getDocument().isBlank()) {
       fileService.removePrevFile(cuti.getDocument());
     }
     cutiRepository.delete(cuti);
@@ -412,12 +426,12 @@ public class CutiServiceImpl {
   }
 
   @Transactional(readOnly = true)
-  public CutiResponse getById(String id){
+  public CutiResponse getById(String id) {
     Cuti cuti = getCuti(id);
     return ResponseConverter.cutiToResponse(cuti);
   }
 
-  public Cuti getCuti(String id){
+  public Cuti getCuti(String id) {
     return cutiRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cuti not found!"));
   }

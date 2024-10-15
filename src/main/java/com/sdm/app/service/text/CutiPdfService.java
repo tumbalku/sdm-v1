@@ -1,20 +1,12 @@
 package com.sdm.app.service.text;
 
 
-
 import com.itextpdf.io.font.FontProgram;
 import com.itextpdf.io.font.FontProgramFactory;
 import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.kernel.color.Color;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.layout.border.SolidBorder;
-import com.itextpdf.layout.element.LineSeparator;
-import com.sdm.app.entity.Cuti;
-import com.sdm.app.entity.Kop;
-import com.sdm.app.entity.User;
-import com.sdm.app.enumrated.KopType;
-import com.sdm.app.service.impl.IdsServiceImpl;
-import com.itextpdf.kernel.color.Color;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -23,12 +15,15 @@ import com.itextpdf.layout.border.Border;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.TextAlignment;
+import com.sdm.app.entity.Cuti;
+import com.sdm.app.entity.Kop;
+import com.sdm.app.entity.User;
+import com.sdm.app.enumrated.KopType;
+import com.sdm.app.service.impl.IdsServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.sdm.app.service.text.PdfComponents.cmToPt;
@@ -66,10 +61,10 @@ public class CutiPdfService {
     // document
     Document document = new Document(pdfDocument);
     document.setFont(fontArial);
-    document.setMargins(margin, margin, margin, margin);
+    document.setMargins(cmToPt(1.52f), margin, margin, margin);
     document.add(headerPortrait());
-    document.add(doubleBorder(container, 0.5f , Color.BLACK).setMarginBottom(1f).setMarginTop(2));
-    document.add(doubleBorder(container, 1f , Color.BLACK).setMarginBottom(20f));
+    document.add(doubleBorder(container, 0.5f, Color.BLACK).setMarginBottom(1f).setMarginTop(2));
+    document.add(doubleBorder(container, 1f, Color.BLACK).setMarginBottom(20f));
     document.add(core);
     document.add(signed(cuti));
     document.add(tembusan(cuti));
@@ -79,7 +74,7 @@ public class CutiPdfService {
     System.out.println("Completed create cuti detail report ");
   }
 
-  private Table coreIzin(User user, Cuti cuti){
+  private Table coreIzin(User user, Cuti cuti) {
     Table core = new Table(new float[]{wFull});
 
     Kop kop = cuti.getKop();
@@ -94,7 +89,7 @@ public class CutiPdfService {
             cutiNum,
             kop.getType().getSort(),
             kop.getRomawi(),
-            cuti.getYear().getValue()),12)
+            cuti.getYear().getValue()), 12)
             .setPadding(-2f)
             .setPaddingBottom(10f)
             .setTextAlignment(TextAlignment.CENTER));
@@ -103,21 +98,21 @@ public class CutiPdfService {
     core.addCell(new Cell().add(bigPoint(" ", "Yang bertanda tangan dibawah ini menerangkan bahwa"))
             .setBorder(Border.NO_BORDER));
 
-    float [] userInfo = {185f, 10, 400};
+    float[] userInfo = {185f, 10, 400};
     Table tblUserInfo = new Table(userInfo).setBorder(Border.NO_BORDER);
 
 
     Map<String, String> userDetail = new LinkedHashMap<>();
     userDetail.put("Nama", user.getName());
 
-    if(Objects.nonNull(user.getNip())){
+    if (Objects.nonNull(user.getNip())) {
       userDetail.put("NIP", user.getNip());
     }
 
     String pangkat = user.getPangkat();
     String golongan = user.getGolongan();
 
-    if(Objects.nonNull(pangkat) && !pangkat.isBlank()){
+    if (Objects.nonNull(pangkat) && !pangkat.isBlank()) {
       String rankGroup = getValue(pangkat) + "/ " + getValue(golongan);
       userDetail.put("Pangkat / Golongan", rankGroup);
     } else {
@@ -137,7 +132,7 @@ public class CutiPdfService {
     String dateEnd = cuti.getDateEnd().format(dateFormatter());
 
     userDetail.put("Jangka waktu", String.format("%d (%s) hari terhitung mulai tanggal %s s/d %s",
-        cuti.getTotal(), convert(cuti.getTotal()), dateStart, dateEnd)
+            cuti.getTotal(), convert(cuti.getTotal()), dateStart, dateEnd)
     );
 
     String address =
@@ -156,7 +151,7 @@ public class CutiPdfService {
     return core;
   }
 
-  private Table core(User user, Cuti cuti){
+  private Table core(User user, Cuti cuti) {
     Table core = new Table(new float[]{wFull});
 
     Kop kop = cuti.getKop();
@@ -174,7 +169,7 @@ public class CutiPdfService {
             cuti.getNumber(),
             kop.getType().getSort(),
             kop.getRomawi(),
-            cuti.getYear().getValue()),12)
+            cuti.getYear().getValue()), 12)
             .setPadding(-2f)
             .setPaddingBottom(20f)
             .setTextAlignment(TextAlignment.CENTER));
@@ -185,24 +180,24 @@ public class CutiPdfService {
                     String.format("Diberikan %s Kepada %s:", capitalizeWords(cutiName), status)))
             .setBorder(Border.NO_BORDER));
 
-    float [] userInfo = {180f, 10, 405};
+    float[] userInfo = {180f, 10, 405};
     Table tblUserInfo = new Table(userInfo).setBorder(Border.NO_BORDER);
 
 
     Map<String, String> userDetail = new LinkedHashMap<>();
     userDetail.put("Nama", user.getName());
 
-    if(Objects.nonNull(user.getNip())){
+    if (Objects.nonNull(user.getNip())) {
       userDetail.put("NIP", user.getNip());
     }
 
     String pangkat = user.getPangkat();
     String golongan = user.getGolongan();
 
-    if(Objects.nonNull(pangkat) && !pangkat.isBlank()){
+    if (Objects.nonNull(pangkat) && !pangkat.isBlank()) {
       String rankGroup = getValue(pangkat) + "/ " + getValue(golongan);
       userDetail.put("Pangkat / Gologan", rankGroup);
-    }else{
+    } else {
       String checkGol = Objects.nonNull(golongan) ? golongan : "Kontrak BLUD";
       userDetail.put("Gologan", checkGol);
     }
@@ -213,7 +208,7 @@ public class CutiPdfService {
     userDetail.put("Unit Kerja", getValue(workUnit));
 
     String address = Objects.nonNull(cuti.getAddress()) && !cuti.getAddress().isBlank() ? cuti.getAddress() :
-                    Objects.nonNull(user.getAddress()) ? user.getAddress().getName() : "-";
+            Objects.nonNull(user.getAddress()) ? user.getAddress().getName() : "-";
 
     userDetail.put("Alamat selama Cuti", address);
 
@@ -232,13 +227,13 @@ public class CutiPdfService {
                     String.format("Sebelum menjalankan %s wajib menyerahkan pekerjaannya kepada atasan langsungnya atau pejabat yang ditunjuk.", cutiName)))
             .setBorder(Border.NO_BORDER));
 
-    if(kop.getType().equals(KopType.BERSALIN)){
-      core.addCell(new Cell().add(smallPoint("b.","Segera setelah persalinan yang bersangkutan supaya memberitahukan tanggal persalinan kepada pejabat yang berwenang memberikan cuti"))
+    if (kop.getType().equals(KopType.BERSALIN)) {
+      core.addCell(new Cell().add(smallPoint("b.", "Segera setelah persalinan yang bersangkutan supaya memberitahukan tanggal persalinan kepada pejabat yang berwenang memberikan cuti"))
               .setBorder(Border.NO_BORDER));
       core.addCell(new Cell().add(smallPoint("c.",
                       String.format("Setelah selesai menjalankan %s wajib melaporkan diri kepada atasan langsungnya dan bekerja kembali sebagai mana mestinya.", cutiName)))
               .setBorder(Border.NO_BORDER));
-    }else{
+    } else {
       core.addCell(new Cell().add(smallPoint("b.",
                       String.format("Setelah selesai menjalankan %s wajib melaporkan diri kepada atasan langsungnya dan bekerja kembali sebagai mana mestinya.", cutiName)))
               .setBorder(Border.NO_BORDER));
@@ -250,9 +245,10 @@ public class CutiPdfService {
             .setBorder(Border.NO_BORDER));
     return core;
   }
-  private Table signed(Cuti cuti){
 
-    float [] ttdSize = {280f, 25, 290};
+  private Table signed(Cuti cuti) {
+
+    float[] ttdSize = {280f, 25, 290};
     Table tblTTD = new Table(ttdSize);
 
     User user = idsService.getUser(cuti.getSignedBy());
@@ -282,7 +278,7 @@ public class CutiPdfService {
     return tblTTD;
   }
 
-  private Table tembusan(Cuti cuti){
+  private Table tembusan(Cuti cuti) {
     Table tembusan = new Table(new float[]{wFull});
     Table tembusanHeader = new Table(new float[]{85, 510});
 
@@ -293,7 +289,7 @@ public class CutiPdfService {
     List<String> tembusanList = new LinkedList<>();
 
 
-    if(cuti.getPeople().size() != 0){
+    if (cuti.getPeople().size() != 0) {
       cuti.getPeople().forEach(people -> tembusanList.add(people.getName().concat(";")));
     }
     tembusanList.add("Yang Bersangkutan Untuk diketahui;");

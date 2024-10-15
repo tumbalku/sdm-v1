@@ -24,7 +24,7 @@ public class User {
   @Id
   @Column(unique = true, nullable = false)
   private String id;
-  @Column(nullable = false, columnDefinition = "int default 0")
+  @Column(columnDefinition = "int default 0")
   private Integer priority;
   @Column(unique = true)
   private String nip;
