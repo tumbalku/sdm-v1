@@ -83,7 +83,10 @@ public class CutiPdfService {
             .setBold()
             .setUnderline()
             .setTextAlignment(TextAlignment.CENTER));
-    String cutiNum = Objects.nonNull(cuti.getNumber()) ? cuti.getNumber() : "  ";
+    String cutiNum = Objects.nonNull(cuti.getNumber()) &&
+            !cuti.getNumber().isBlank() ?
+            cuti.getNumber() : "\t\t";
+
     core.addCell(setText(String.format("No. %s/%s/%s/RSUD/%s/%s",
             kop.getUniKop(),
             cutiNum,
@@ -164,9 +167,13 @@ public class CutiPdfService {
             .setUnderline()
             .setTextAlignment(TextAlignment.CENTER));
 
+    String cutiNum = Objects.nonNull(cuti.getNumber()) &&
+            !cuti.getNumber().isBlank() ?
+            cuti.getNumber() : "\t\t";
+
     core.addCell(setText(String.format("No. %s/%s/%s/RSUD/%s/%s",
             kop.getUniKop(),
-            cuti.getNumber(),
+            cutiNum,
             kop.getType().getSort(),
             kop.getRomawi(),
             cuti.getYear().getValue()), 12)
