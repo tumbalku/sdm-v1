@@ -212,10 +212,10 @@ public class CutiPdfService {
 
     if (Objects.nonNull(pangkat) && !pangkat.isBlank()) {
       String rankGroup = getValue(pangkat) + "/ " + getValue(golongan);
-      userDetail.put("Pangkat / Gologan", rankGroup);
+      userDetail.put("Pangkat / Golongan", rankGroup);
     } else {
       String checkGol = Objects.nonNull(golongan) ? golongan : "Kontrak BLUD";
-      userDetail.put("Gologan", checkGol);
+      userDetail.put("Golongan", checkGol);
     }
 
     String workUnit = Objects.nonNull(cuti.getWorkUnit()) && !cuti.getWorkUnit().isBlank() ?
