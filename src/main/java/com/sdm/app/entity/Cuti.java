@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @Getter
@@ -31,12 +30,15 @@ public class Cuti {
   private String romawi;
   private String address;
   private String workUnit;
-  @Column(columnDefinition="LONGTEXT")
+  @Column(columnDefinition = "LONGTEXT")
   private String message;
   @Enumerated(value = EnumType.STRING)
   private CutiStatus status;
-  @Column(columnDefinition="LONGTEXT")
+  @Column(columnDefinition = "LONGTEXT")
   private String reason;
+
+  // this is for cuti tahunan
+  private String forYear;
   private Year year;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
@@ -54,7 +56,7 @@ public class Cuti {
   private Integer total;
   private String document;
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "kop_id", referencedColumnName = "id",  nullable = false)
+  @JoinColumn(name = "kop_id", referencedColumnName = "id", nullable = false)
   private Kop kop;
 
   @ManyToOne(fetch = FetchType.EAGER)

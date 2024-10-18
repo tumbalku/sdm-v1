@@ -169,7 +169,7 @@ public class CutiPdfService {
 
     String cutiNum = Objects.nonNull(cuti.getNumber()) &&
             !cuti.getNumber().isBlank() ?
-            cuti.getNumber() : "\t\t";
+            cuti.getNumber() : String.format("%10s", "");
 
     core.addCell(setText(String.format("No. %s/%s/%s/RSUD/%s/%s",
             kop.getUniKop(),
@@ -183,9 +183,18 @@ public class CutiPdfService {
 
 
     String status = Objects.nonNull(user.getNip()) ? "Pegawai Negeri Sipil" : "Pegawai";
-    core.addCell(new Cell().add(bigPoint("1.",
-                    String.format("Diberikan %s Kepada %s:", capitalizeWords(cutiName), status)))
-            .setBorder(Border.NO_BORDER));
+    String forYear = Objects.nonNull(cuti.getForYear()) &&
+            !cuti.getForYear().isBlank() ?
+            cuti.getForYear() : cuti.getYear().toString();
+    if (kop.getType().equals(KopType.TAHUNAN)) {
+      core.addCell(new Cell().add(bigPoint("1.",
+                      String.format("Diberikan %s untuk tahun %s kepada %s:", capitalizeWords(cutiName), forYear, status)))
+              .setBorder(Border.NO_BORDER));
+    } else {
+      core.addCell(new Cell().add(bigPoint("1.",
+                      String.format("Diberikan %s kepada %s:", capitalizeWords(cutiName), status)))
+              .setBorder(Border.NO_BORDER));
+    }
 
     float[] userInfo = {180f, 10, 405};
     Table tblUserInfo = new Table(userInfo).setBorder(Border.NO_BORDER);
@@ -226,7 +235,7 @@ public class CutiPdfService {
     String dateEnd = cuti.getDateEnd().format(dateFormatter());
 
     core.addCell(setText(
-            String.format("Selama %d (%s) hari terhitung mulai tanggal %s s/d %s dengan ketentuan sebagai berikut:",
+            String.format("Selama %d (%s) hari kerja terhitung mulai tanggal %s s/d %s dengan ketentuan sebagai berikut:",
                     cuti.getTotal(), convert(cuti.getTotal()), dateStart, dateEnd), 12
     ).setPaddingLeft(20f).setPaddingTop(10f).setTextAlignment(TextAlignment.JUSTIFIED));
 
@@ -290,7 +299,7 @@ public class CutiPdfService {
     Table tembusanHeader = new Table(new float[]{85, 510});
 
     tembusanHeader.addCell(setText("Tembusan :", 12).setBold().setUnderline());
-    tembusanHeader.addCell(setText("Disampaikan Kepada Yth,", 12).setPaddingTop(1).setPaddingLeft(-12));
+//    tembusanHeader.addCell(setText("Disampaikan Kepada Yth,", 12).setPaddingTop(1).setPaddingLeft(-12));
     tembusan.addCell(new Cell().add(tembusanHeader).setBorder(Border.NO_BORDER).setPaddingTop(30f).setPaddingBottom(-2f));
 
     List<String> tembusanList = new LinkedList<>();
@@ -299,7 +308,7 @@ public class CutiPdfService {
     if (cuti.getPeople().size() != 0) {
       cuti.getPeople().forEach(people -> tembusanList.add(people.getName().concat(";")));
     }
-    tembusanList.add("Yang Bersangkutan Untuk diketahui;");
+    tembusanList.add("Yang bersangkutan untuk diketahui;");
     tembusanList.add("Pertinggal.");
 
     cellDataList(tembusan, tembusanList);

@@ -5,7 +5,6 @@ import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.List;
 
 
 @Getter
@@ -22,6 +21,7 @@ public class UserCreateCutiRequest {
   private Integer total;
   private String workUnit;
   private String address;
+  private String forYear;
   private MultipartFile file;
 
 }

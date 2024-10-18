@@ -25,7 +25,7 @@ public class CutiResponse {
   private String status;
   private List<String> people;
   private KopResponse kop;
-//  private SimpleUserResponse user;
+  //  private SimpleUserResponse user;
   private UserLite user;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
@@ -33,5 +33,6 @@ public class CutiResponse {
   private Integer total;
   private String document;
   private String signedBy;
+  private String forYear;
   private String mark;
 }

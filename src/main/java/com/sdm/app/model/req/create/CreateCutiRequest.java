@@ -28,6 +28,7 @@ public class CreateCutiRequest {
   private CutiStatus status;
   private String workUnit;
   private String signedBy;
+  private String forYear;
   private Integer total;
   private MultipartFile file;
 }

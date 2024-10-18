@@ -31,5 +31,6 @@ public class UpdateCutiRequest {
   private String workUnit;
   private Integer total;
   private String signedBy;
+  private String forYear;
   private MultipartFile file;
 }

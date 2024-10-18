@@ -9,7 +9,10 @@ import com.sdm.app.model.req.create.UserCreateCutiRequest;
 import com.sdm.app.model.req.search.SearchCutiRequest;
 import com.sdm.app.model.req.update.DecitionCutiRequest;
 import com.sdm.app.model.req.update.UpdateCutiRequest;
-import com.sdm.app.model.res.*;
+import com.sdm.app.model.res.CutiResponse;
+import com.sdm.app.model.res.DataReportResponse;
+import com.sdm.app.model.res.WebResponse;
+import com.sdm.app.model.res.WebResponseWithPagingReport;
 import com.sdm.app.service.impl.CutiServiceImpl;
 import com.sdm.app.utils.ResponseConverter;
 import lombok.AllArgsConstructor;
@@ -38,12 +41,12 @@ public class CutiController {
   private final CutiServiceImpl cutiService;
 
   @GetMapping(path = "search", produces = MediaType.APPLICATION_JSON_VALUE)
-  public WebResponseWithPagingReport<List<CutiResponse>, Map<KopType, Long>> search (
-                                                                 @RequestParam(name = "name", required = false) String name,
-                                                                 @RequestParam(name = "type", required = false) String type,
-                                                                 @RequestParam(name = "statuses", required = false) List<String> statuses,
-                                                                 @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-                                                                 @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
+  public WebResponseWithPagingReport<List<CutiResponse>, Map<KopType, Long>> search(
+          @RequestParam(name = "name", required = false) String name,
+          @RequestParam(name = "type", required = false) String type,
+          @RequestParam(name = "statuses", required = false) List<String> statuses,
+          @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+          @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
 
     SearchCutiRequest request = new SearchCutiRequest();
     request.setName(name);
@@ -61,7 +64,7 @@ public class CutiController {
             .build();
   }
 
-//  Download
+  //  Download
   @GetMapping("/download/blanko")
   public ResponseEntity<byte[]> downloadBlanko(User user) throws IOException {
 
@@ -75,9 +78,10 @@ public class CutiController {
 
     return new ResponseEntity<>(data, headers, HttpStatus.OK);
   }
+
   @GetMapping("/download/reports")
   public ResponseEntity<byte[]> downloadReports(User user,
-                                               @RequestParam(name = "year") int year) throws IOException {
+                                                @RequestParam(name = "year") int year) throws IOException {
 
     Resource resource = cutiService.cutiReportYear(user, year);
 
@@ -89,6 +93,7 @@ public class CutiController {
 
     return new ResponseEntity<>(data, headers, HttpStatus.OK);
   }
+
   @GetMapping("/download/{id}")
   public ResponseEntity<byte[]> downloadFile(User user,
                                              @PathVariable("id") String id) throws IOException {
@@ -107,8 +112,8 @@ public class CutiController {
 
   @PatchMapping("/decision/{id}")
   public WebResponse<CutiResponse> makeDecisionCuti(User user,
-                                              @PathVariable("id") String id,
-                                              @RequestBody DecitionCutiRequest request){
+                                                    @PathVariable("id") String id,
+                                                    @RequestBody DecitionCutiRequest request) {
     request.setId(id);
     CutiResponse response = cutiService.makeDecisionCuti(user, request);
     return WebResponse.<CutiResponse>builder()
@@ -116,6 +121,7 @@ public class CutiController {
             .data(response)
             .build();
   }
+
   @PostMapping(path = "/request", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public WebResponse<CutiResponse> createRequest(User user,
                                                  @RequestParam(name = "dateStart", required = false) LocalDate dateStart,
@@ -123,6 +129,7 @@ public class CutiController {
                                                  @RequestParam(name = "address", required = false) String address,
                                                  @RequestParam(name = "reason", required = false) String reason,
                                                  @RequestParam(name = "workUnit", required = false) String workUnit,
+                                                 @RequestParam(name = "forYear", required = false) String forYear,
                                                  @RequestParam(name = "kop", required = false) Long kop,
                                                  @RequestParam(name = "total", required = false) Integer total,
                                                  @RequestParam(name = "file", required = false) MultipartFile file) {
@@ -135,6 +142,7 @@ public class CutiController {
     request.setWorkUnit(workUnit);
     request.setTotal(total);
     request.setFile(file);
+    request.setForYear(forYear);
 
     CutiResponse response = cutiService.userCreateCuti(user, request);
     return WebResponse.<CutiResponse>builder()
@@ -154,6 +162,7 @@ public class CutiController {
                                           @RequestParam(name = "address", required = false) String address,
                                           @RequestParam(name = "mark", required = false) String mark,
                                           @RequestParam(name = "message", required = false) String message,
+                                          @RequestParam(name = "forYear", required = false) String forYear,
                                           @RequestParam(name = "reason", required = false) String reason,
                                           @RequestParam(name = "status", required = false) CutiStatus status,
                                           @RequestParam(name = "workUnit", required = false) String workUnit,
@@ -178,6 +187,7 @@ public class CutiController {
     request.setSignedBy(signedBy);
     request.setTotal(total);
     request.setFile(file);
+    request.setForYear(forYear);
 
     CutiResponse response = cutiService.create(user, request);
     return WebResponse.<CutiResponse>builder()
@@ -198,6 +208,7 @@ public class CutiController {
                                           @RequestParam(name = "address", required = false) String address,
                                           @RequestParam(name = "mark", required = false) String mark,
                                           @RequestParam(name = "message", required = false) String message,
+                                          @RequestParam(name = "forYear", required = false) String forYear,
                                           @RequestParam(name = "status", required = false) CutiStatus status,
                                           @RequestParam(name = "workUnit", required = false) String workUnit,
                                           @RequestParam(name = "signedBy", required = false) String signedBy,
@@ -220,6 +231,7 @@ public class CutiController {
     request.setSignedBy(signedBy);
     request.setTotal(total);
     request.setFile(file);
+    request.setForYear(forYear);
 
     CutiResponse response = cutiService.update(user, request);
     return WebResponse.<CutiResponse>builder()

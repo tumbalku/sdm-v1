@@ -181,6 +181,7 @@ public class ResponseConverter {
             .dateStart(cuti.getDateStart())
             .signedBy(cuti.getSignedBy())
             .mark(cuti.getMark())
+            .forYear(cuti.getForYear())
             .address(cuti.getAddress())
             .user(userToLiteResponse(cuti.getUser()))
             .number(cuti.getNumber())

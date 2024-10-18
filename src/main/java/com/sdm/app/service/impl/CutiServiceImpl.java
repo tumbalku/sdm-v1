@@ -167,6 +167,7 @@ public class CutiServiceImpl {
     cuti.setReason(request.getReason());
     cuti.setDateEnd(request.getDateEnd());
     cuti.setDateStart(request.getDateStart());
+    cuti.setForYear(request.getForYear());
 
     String workUnit = Objects.nonNull(request.getWorkUnit()) &&
             !request.getWorkUnit().isBlank() ?
@@ -309,6 +310,7 @@ public class CutiServiceImpl {
     cuti.setTotal(request.getTotal());
     cuti.setMessage(request.getMessage());
     cuti.setReason(request.getReason());
+    cuti.setForYear(request.getForYear());
 
     if (Objects.nonNull(request.getFile())) {
       if (request.getFile().getSize() != 0) {
@@ -360,6 +362,7 @@ public class CutiServiceImpl {
     Optional.ofNullable(request.getDateEnd()).ifPresent(cuti::setDateEnd);
     Optional.ofNullable(request.getDateStart()).ifPresent(cuti::setDateStart);
     Optional.ofNullable(request.getAddress()).filter(StringUtils::hasText).ifPresent(cuti::setAddress);
+    Optional.ofNullable(request.getForYear()).ifPresent(cuti::setForYear);
 
     if (Objects.nonNull(request.getFile())) {
       if (request.getFile().getSize() != 0) {
